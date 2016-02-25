@@ -18,7 +18,7 @@ val pmdVersion = "5.4.0"
 libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-json" % "2.4.6" withSources(),
   "org.scala-lang.modules" %% "scala-xml" % "1.0.4" withSources(),
-  "com.codacy" %% "codacy-duplication-scala-seed" % "1.0.0-SNAPSHOT",
+  "com.codacy" %% "codacy-duplication-scala-seed" % "1.0.1",
   "net.sourceforge.pmd" % "pmd-scala" % pmdVersion withSources(),
   "net.sourceforge.pmd" % "pmd-java" % pmdVersion withSources(),
   "net.sourceforge.pmd" % "pmd-javascript" % pmdVersion withSources(),
