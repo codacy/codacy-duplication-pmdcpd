@@ -98,73 +98,86 @@ public class JavascriptTokenizer extends AbstractTokenizer {
     }
 
     private int parseString(StringBuilder token, int loc, char stringDelimiter) {
-        boolean escaped = false;
-        boolean done = false;
+        int localLoc = loc;
+        boolean stringNotEnded = true;
 
-        while (loc < currentLine.length() && !done) {
-            char tok = currentLine.charAt(loc);
-            if (escaped && tok == stringDelimiter) { // Found an escaped string
-                escaped = false;
-            } else if (tok == stringDelimiter && token.length() > 0) {
-                // We are done, we found the end of the string...
-                done = true;
+        while (stringNotEnded) {
+            boolean escaped = false;
+            boolean done = false;
+
+            while (localLoc < currentLine.length() && !done) {
+                char tok = currentLine.charAt(localLoc);
+                if (escaped && tok == stringDelimiter) { // Found an escaped string
+                    escaped = false;
+                } else if (tok == stringDelimiter && token.length() > 0) {
+                    // We are done, we found the end of the string...
+                    done = true;
+                } else {
+                    escaped = tok == '\\'; // Found an escaped char
+                }
+                // Adding char to String:" + token.toString());
+                token.append(tok);
+                localLoc++;
+            }
+
+            // Handling multiple lines string
+            if (!done && // ... we didn't find the end of the string
+                    localLoc >= currentLine.length() && // ... we have reach the end of
+                    // the line ( the String is
+                    // incomplete, for the moment at
+                    // least)
+                    spanMultipleLinesString && // ... the language allow multiple
+                    // line span Strings
+                    lineNumber < code.size() - 1 // ... there is still more lines to
+                // parse
+                    ) {
+                // removes last character, if it is the line continuation (e.g.
+                // backslash) character
+                if (spanMultipleLinesLineContinuationCharacter != null && token.length() > 0
+                        && token.charAt(token.length() - 1) == spanMultipleLinesLineContinuationCharacter) {
+                    token.deleteCharAt(token.length() - 1);
+                }
+                // parsing new line
+                currentLine = code.get(++lineNumber);
+                localLoc = 0;
             } else {
-                escaped = tok == '\\'; // Found an escaped char
+                stringNotEnded = false;
             }
-            // Adding char to String:" + token.toString());
-            token.append(tok);
-            loc++;
         }
 
-        // Handling multiple lines string
-        if (!done && // ... we didn't find the end of the string
-                loc >= currentLine.length() && // ... we have reach the end of
-                // the line ( the String is
-                // incomplete, for the moment at
-                // least)
-                spanMultipleLinesString && // ... the language allow multiple
-                // line span Strings
-                lineNumber < code.size() - 1 // ... there is still more lines to
-            // parse
-                ) {
-            // removes last character, if it is the line continuation (e.g.
-            // backslash) character
-            if (spanMultipleLinesLineContinuationCharacter != null && token.length() > 0
-                    && token.charAt(token.length() - 1) == spanMultipleLinesLineContinuationCharacter) {
-                token.deleteCharAt(token.length() - 1);
-            }
-            // parsing new line
-            currentLine = code.get(++lineNumber);
-            // Warning : recursive call !
-            loc = parseString(token, 0, stringDelimiter);
-        }
-
-        return loc + 1;
+        return localLoc + 1;
     }
 
     private int parseMultilineComment(int loc) {
-        boolean done = false;
+        int localLoc = loc;
+        boolean commentNotEnded = true;
 
-        while (loc < currentLine.length() && !done) {
-            if (isMultilineCommentEnd(currentLine.substring(loc))) {
-                // We are done, we found the end of the string...
-                done = true;
+        while (commentNotEnded) {
+            boolean done = false;
+
+            while (localLoc < currentLine.length() && !done) {
+                if (isMultilineCommentEnd(currentLine.substring(localLoc))) {
+                    // We are done, we found the end of the string...
+                    done = true;
+                }
+                localLoc++;
             }
-            loc++;
+
+            // Handling multiple comments
+            if (!done && // ... we didn't find the end of the comment
+                    localLoc >= currentLine.length() && // ... we have reached the end of the line
+                    lineNumber < code.size() - 1 // ... there is still more lines to parse
+                    ) {
+                // parsing new line
+                currentLine = code.get(++lineNumber);
+                // Warning : recursive call !
+                localLoc = 0;
+            } else {
+                commentNotEnded = false;
+            }
         }
 
-        // Handling multiple comments
-        if (!done && // ... we didn't find the end of the comment
-                loc >= currentLine.length() && // ... we have reached the end of the line
-                lineNumber < code.size() - 1 // ... there is still more lines to parse
-                ) {
-            // parsing new line
-            currentLine = code.get(++lineNumber);
-            // Warning : recursive call !
-            loc = parseMultilineComment(0);
-        }
-
-        return loc + 1;
+        return localLoc + 1;
     }
 
     private boolean ignoreCharacter(char tok) {
