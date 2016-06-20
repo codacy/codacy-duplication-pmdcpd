@@ -24,6 +24,7 @@ object Cpd extends IDuplicationImpl {
     val skipLexicalErrors = true
 
     val (cpdLanguage, defaultMinToken) = config.language match {
+      case Language.Python => (new PythonLanguage, 20)
       case Language.Ruby => (new RubyLanguage, 20)
       case Language.Java => (new JavaLanguage, 100)
       case Language.Javascript =>

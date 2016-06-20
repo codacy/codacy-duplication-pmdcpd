@@ -23,6 +23,7 @@ libraryDependencies ++= Seq(
   "net.sourceforge.pmd" % "pmd-java" % pmdVersion withSources(),
   "net.sourceforge.pmd" % "pmd-javascript" % pmdVersion withSources(),
   "net.sourceforge.pmd" % "pmd-ruby" % pmdVersion withSources(),
+  "net.sourceforge.pmd" % "pmd-python" % pmdVersion withSources(),
   "org.scalameta" %% "scalameta" % "0.0.5-M1" withSources()
 )
 
