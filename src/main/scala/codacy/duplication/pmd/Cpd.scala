@@ -1,5 +1,6 @@
 package codacy.duplication.pmd
 
+import java.io.{OutputStream, PrintStream}
 import java.nio.file.{Path, Paths}
 
 import codacy.dockerApi.api.{DuplicationClone, DuplicationCloneFile, DuplicationConfiguration, Language}
@@ -11,11 +12,23 @@ import scala.util.Try
 
 object Cpd extends IDuplicationImpl {
   override def apply(path: Path, config: DuplicationConfiguration): Try[List[DuplicationClone]] = {
+    val outStream = System.out
+    val errStream = System.err
+
+    System.setOut(new PrintStream(new NullOutputStream()))
+    System.setErr(new PrintStream(new NullOutputStream()))
+
     val configuration = getConfiguration(config)
     val cpd = new CPD(configuration)
     cpd.addRecursively(path.toFile)
     cpd.go()
-    Try(cpd.getMatches.toList.map(matchToClone(_, path)))
+
+    val res = Try(cpd.getMatches.toList.map(matchToClone(_, path)))
+
+    System.setOut(outStream)
+    System.setErr(errStream)
+
+    res
   }
 
   private def getConfiguration(config: DuplicationConfiguration) = {
@@ -54,6 +67,11 @@ object Cpd extends IDuplicationImpl {
     }
 
     DuplicationClone(m.getSourceCodeSlice, m.getTokenCount, m.getLineCount, files)
+  }
+
+  private class NullOutputStream extends OutputStream {
+    override def write(b: Int) {
+    }
   }
 
 }
