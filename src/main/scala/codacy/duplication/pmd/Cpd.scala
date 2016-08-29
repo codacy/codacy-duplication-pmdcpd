@@ -40,10 +40,7 @@ object Cpd extends IDuplicationImpl {
       case Language.Python => (new PythonLanguage, 20)
       case Language.Ruby => (new RubyLanguage, 20)
       case Language.Java => (new JavaLanguage, 100)
-      case Language.Javascript =>
-        val cpdJs = new EcmascriptLanguage
-        object JavascriptLanguage extends AbstractLanguage(cpdJs.getName, cpdJs.getTerseName, new JavascriptTokenizer(), cpdJs.getExtensions: _*)
-        (JavascriptLanguage, 20)
+      case Language.Javascript => (new EcmascriptLanguage, 40)
       case Language.Scala =>
         val cpdScala = new ScalaLanguage
         object ScalaL extends AbstractLanguage(cpdScala.getName, cpdScala.getTerseName, ScalaTokenizer, cpdScala.getExtensions: _*)

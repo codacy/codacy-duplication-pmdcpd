@@ -13,7 +13,7 @@ resolvers ++= Seq(
   "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/releases"
 )
 
-val pmdVersion = "5.4.0"
+val pmdVersion = "5.5.1"
 
 libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-json" % "2.4.6" withSources(),
