@@ -13,7 +13,7 @@ resolvers ++= Seq(
   "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/releases"
 )
 
-val pmdVersion = "5.5.1"
+val pmdVersion = "5.5.3"
 
 libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-json" % "2.4.6" withSources(),
@@ -24,7 +24,7 @@ libraryDependencies ++= Seq(
   "net.sourceforge.pmd" % "pmd-javascript" % pmdVersion withSources(),
   "net.sourceforge.pmd" % "pmd-ruby" % pmdVersion withSources(),
   "net.sourceforge.pmd" % "pmd-python" % pmdVersion withSources(),
-  "org.scalameta" %% "scalameta" % "0.0.5-M1" withSources()
+  "org.scalameta" %% "scalameta" % "1.4.0" withSources()
 )
 
 // FIXES: package database contains object and package with same name: DBType
@@ -51,9 +51,11 @@ daemonUser in Docker := dockerUser
 
 daemonGroup in Docker := dockerGroup
 
-dockerBaseImage := "frolvlad/alpine-oraclejdk8"
+dockerBaseImage := "develar/java"
 
-val installAll = "apk update && apk add bash curl git"
+val installAll = """apk update && apk add bash curl &&
+                   |rm -rf /tmp/* &&
+                   |rm -rf /var/cache/apk/*""".stripMargin.replaceAll(System.lineSeparator(), " ")
 
 dockerCommands := dockerCommands.value.flatMap {
   case cmd@Cmd("WORKDIR", _) => List(cmd,
@@ -61,7 +63,7 @@ dockerCommands := dockerCommands.value.flatMap {
   )
 
   case cmd@(Cmd("ADD", "opt /opt")) => List(cmd,
-    Cmd("RUN", "adduser -u 2004 -D docker")
+    Cmd("RUN", s"adduser -u 2004 -D $dockerUser")
   )
   case other => List(other)
 }
