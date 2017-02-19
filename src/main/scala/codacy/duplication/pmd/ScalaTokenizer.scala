@@ -16,9 +16,13 @@ private[pmd] object ScalaTokenizer extends Tokenizer {
     val fileName = sourceCode.getFileName
 
     Try(new File(fileName).parse[Source]) match {
-      case Success(tree) =>
+      case Success(Parsed.Success(tree)) =>
         matchesInTree(tree, fileName).foreach(tokenEntries.add)
         tokenEntries.add(TokenEntry.getEOF)
+      case Success(Parsed.Error(position, message, details)) => throw new TokenMgrError(
+        s"Lexical error in file $fileName. The scala tokenizer exited with error on $position: " + message + details,
+        TokenMgrError.LEXICAL_ERROR
+      )
       case Failure(error) => throw new TokenMgrError(
         s"Lexical error in file $fileName. The scala tokenizer exited with error: " + error.getMessage,
         TokenMgrError.LEXICAL_ERROR
@@ -37,16 +41,15 @@ private[pmd] object ScalaTokenizer extends Tokenizer {
           }
         }.getOrElse(Seq(t))
       case nonDefaultTree => Seq(nonDefaultTree)
-    }.flatMap(_.tokens.filterNot(_.isInstanceOf[Comment]))
+    }.flatMap(_.tokens.filterNot(t => t.isInstanceOf[Comment] || t.isInstanceOf[Space]))
 
     tokens.collect {
       case token if !token.isInstanceOf[EOF] =>
         val str = token match {
-          case x if x.isInstanceOf[BOF] => "BOF"
-          case x if x.isInstanceOf[Dynamic] => x.code
-          case x if x.isInstanceOf[Static] => x.name
+          case _: BOF => "BOF"
+          case other => other.show[Syntax]
         }
-        new TokenEntry(str, filename, token.position.start.line)
+        new TokenEntry(str, filename, token.pos.start.line + 1)
     }
   }
 
