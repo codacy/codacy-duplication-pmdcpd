@@ -12,11 +12,11 @@ import scala.util.Try
 
 object Cpd extends IDuplicationImpl {
   override def apply(path: Path, config: DuplicationConfiguration): Try[List[DuplicationClone]] = {
-    val outStream = System.out
-    val errStream = System.err
-
-    System.setOut(new PrintStream(new NullOutputStream()))
-    System.setErr(new PrintStream(new NullOutputStream()))
+    val outStream = Console.out
+    val errStream = Console.err
+    
+    System.setOut(NullPrintStream)
+    System.setErr(NullPrintStream)
 
     val configuration = getConfiguration(config)
     val cpd = new CPD(configuration)
@@ -66,9 +66,8 @@ object Cpd extends IDuplicationImpl {
     DuplicationClone(m.getSourceCodeSlice, m.getTokenCount, m.getLineCount, files)
   }
 
-  private class NullOutputStream extends OutputStream {
-    override def write(b: Int) {
-    }
-  }
-
 }
+
+object NullPrintStream extends PrintStream(new OutputStream {
+  override def write(b: Int): Unit = ()
+})
