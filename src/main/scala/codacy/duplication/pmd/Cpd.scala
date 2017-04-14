@@ -14,7 +14,7 @@ object Cpd extends IDuplicationImpl {
   override def apply(path: Path, config: DuplicationConfiguration): Try[List[DuplicationClone]] = {
     val outStream = Console.out
     val errStream = Console.err
-    
+
     System.setOut(NullPrintStream)
     System.setErr(NullPrintStream)
 
@@ -45,6 +45,7 @@ object Cpd extends IDuplicationImpl {
         val cpdScala = new ScalaLanguage
         object ScalaL extends AbstractLanguage(cpdScala.getName, cpdScala.getTerseName, ScalaTokenizer, cpdScala.getExtensions: _*)
         (ScalaL, 50)
+      case Language.CSharp => (new CsLanguage, 50)
     }
 
     val minTokenMatch = config.params.get("minTokenMatch").flatMap(_.asOpt[Int]).getOrElse(defaultMinToken)

@@ -13,7 +13,7 @@ resolvers ++= Seq(
   "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/releases"
 )
 
-val pmdVersion = "5.5.3"
+val pmdVersion = "5.5.5"
 
 libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-json" % "2.4.6" withSources(),
@@ -24,6 +24,7 @@ libraryDependencies ++= Seq(
   "net.sourceforge.pmd" % "pmd-javascript" % pmdVersion withSources(),
   "net.sourceforge.pmd" % "pmd-ruby" % pmdVersion withSources(),
   "net.sourceforge.pmd" % "pmd-python" % pmdVersion withSources(),
+  "net.sourceforge.pmd" % "pmd-cs" % pmdVersion withSources(),
   "org.scalameta" %% "scalameta" % "1.4.0" withSources()
 )
 
