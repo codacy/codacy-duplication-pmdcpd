@@ -10,10 +10,10 @@ scalaVersion := languageVersion
 
 resolvers ++= Seq(
   "Typesafe Repo" at "http://repo.typesafe.com/typesafe/releases/",
-  "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/releases"
+  "Sonatype OSS Releases" at "https://oss.sonatype.org/content/repositories/releases"
 )
 
-val pmdVersion = "5.5.5"
+val pmdVersion = "5.8.1"
 
 libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-json" % "2.4.6" withSources(),
