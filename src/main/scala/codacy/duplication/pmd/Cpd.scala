@@ -1,6 +1,7 @@
 package codacy.duplication.pmd
 
-import java.io.{OutputStream, PrintStream}
+import java.io.{ByteArrayOutputStream, OutputStream, PrintStream}
+import java.nio.charset.StandardCharsets
 import java.nio.file.{Path, Paths}
 
 import codacy.dockerApi.api.{DuplicationClone, DuplicationCloneFile, DuplicationConfiguration, Language}
@@ -8,15 +9,15 @@ import codacy.dockerApi.traits.IDuplicationImpl
 import net.sourceforge.pmd.cpd._
 
 import scala.collection.JavaConversions._
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 
 object Cpd extends IDuplicationImpl {
   override def apply(path: Path, config: DuplicationConfiguration): Try[List[DuplicationClone]] = {
-    val outStream = Console.out
-    val errStream = Console.err
+    val baos = new ByteArrayOutputStream()
+    val errStream = new PrintStream(baos, true, "utf-8")
 
-    System.setOut(NullPrintStream)
-    System.setErr(NullPrintStream)
+    System.setOut(errStream)
+    System.setErr(errStream)
 
     val configuration = getConfiguration(config)
     val cpd = new CPD(configuration)
@@ -25,10 +26,21 @@ object Cpd extends IDuplicationImpl {
 
     val res = Try(cpd.getMatches.toList.map(matchToClone(_, path)))
 
-    System.setOut(outStream)
-    System.setErr(errStream)
+    System.setOut(Console.out)
+    System.setErr(Console.err)
 
-    res
+    res match {
+      case s@Success(_) => s
+      case Failure(e) =>
+        val errString = new String(baos.toByteArray, StandardCharsets.UTF_8)
+        val msg =
+          s"""|Failed to execute duplication: ${e.getMessage}
+              |std:
+              |$errString
+         """.stripMargin
+
+        Failure(new Exception(msg, e))
+    }
   }
 
   private def getConfiguration(config: DuplicationConfiguration) = {
