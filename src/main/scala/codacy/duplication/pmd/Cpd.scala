@@ -14,22 +14,21 @@ import scala.util.{Failure, Success, Try}
 object Cpd extends IDuplicationImpl {
   override def apply(path: Path, config: DuplicationConfiguration): Try[List[DuplicationClone]] = {
     val baos = new ByteArrayOutputStream()
-    val errStream = new PrintStream(baos, true, "utf-8")
+    val stdErr = System.err
 
-    System.setOut(errStream)
-    System.setErr(errStream)
+    Try {
+      System.setErr(new PrintStream(baos, true, "utf-8"))
 
-    val configuration = getConfiguration(config)
-    val cpd = new CPD(configuration)
-    cpd.addRecursively(path.toFile)
-    cpd.go()
+      val configuration = getConfiguration(config)
+      val cpd = new CPD(configuration)
+      cpd.addRecursively(path.toFile)
 
-    val res = Try(cpd.getMatches.toList.map(matchToClone(_, path)))
+      System.setErr(stdErr)
 
-    System.setOut(Console.out)
-    System.setErr(Console.err)
+      cpd.go()
 
-    res match {
+      cpd.getMatches.toList.map(matchToClone(_, path))
+    } match {
       case s@Success(_) => s
       case Failure(e) =>
         val errString = new String(baos.toByteArray, StandardCharsets.UTF_8)
