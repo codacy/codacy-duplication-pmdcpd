@@ -1,10 +1,12 @@
 import com.typesafe.sbt.packager.docker.Cmd
+import Dependencies._
 
 name := """codacy-duplication-pmdcpd"""
 
 version := "1.0.0-SNAPSHOT"
 
-val languageVersion = "2.11.12"
+val scalaBinaryVersionNumber = "2.12"
+val languageVersion = s"$scalaBinaryVersionNumber.4"
 
 scalaVersion := languageVersion
 
@@ -13,19 +15,16 @@ resolvers ++= Seq(
   "Sonatype OSS Releases" at "https://oss.sonatype.org/content/repositories/releases"
 )
 
-val pmdVersion = "6.0.1"
-
 libraryDependencies ++= Seq(
-  "com.typesafe.play" %% "play-json" % "2.3.10" withSources(),
-  "org.scala-lang.modules" %% "scala-xml" % "1.0.4" withSources(),
-  "com.codacy" %% "codacy-duplication-scala-seed" % "1.0.2",
-  "net.sourceforge.pmd" % "pmd-scala" % pmdVersion withSources(),
-  "net.sourceforge.pmd" % "pmd-java" % pmdVersion withSources(),
-  "net.sourceforge.pmd" % "pmd-javascript" % pmdVersion withSources(),
-  "net.sourceforge.pmd" % "pmd-ruby" % pmdVersion withSources(),
-  "net.sourceforge.pmd" % "pmd-python" % pmdVersion withSources(),
-  "net.sourceforge.pmd" % "pmd-cs" % pmdVersion withSources(),
-  "org.scalameta" %% "scalameta" % "1.4.0" withSources()
+  playJson withSources(),
+  duplicationScalaSeed withSources(),
+  scalaPmd withSources(),
+  javaPmd withSources(),
+  javascriptPmd withSources(),
+  rubyPmd withSources(),
+  pythonPmd withSources(),
+  csPmd withSources(),
+  scalaMeta withSources()
 )
 
 // FIXES: package database contains object and package with same name: DBType
