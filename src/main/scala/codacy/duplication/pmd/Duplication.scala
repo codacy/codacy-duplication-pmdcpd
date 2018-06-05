@@ -1,5 +1,5 @@
 package codacy.duplication.pmd
 
-import codacy.dockerApi.DockerDuplication
+import codacy.docker.api.duplication.DockerDuplication
 
-object Duplication extends DockerDuplication(Cpd)
+object Duplication extends DockerDuplication(Cpd)()
