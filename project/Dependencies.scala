@@ -15,4 +15,7 @@ object Dependencies {
   val pythonPmd = pmdGroupArtifactID % "pmd-python" % pmdVersion
   val csPmd = pmdGroupArtifactID % "pmd-cs" % pmdVersion
 
+  val specs2Version = "4.2.0"
+  val specs2 = "org.specs2" %% "specs2-core" % specs2Version
+
 }

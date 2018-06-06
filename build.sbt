@@ -1,5 +1,6 @@
 import com.typesafe.sbt.packager.docker.Cmd
 import Dependencies._
+import sbt.Keys.libraryDependencies
 
 name := """codacy-duplication-pmdcpd"""
 
@@ -24,7 +25,8 @@ libraryDependencies ++= Seq(
   rubyPmd withSources(),
   pythonPmd withSources(),
   csPmd withSources(),
-  scalaMeta withSources()
+  scalaMeta withSources(),
+  specs2 % Test
 )
 
 // FIXES: package database contains object and package with same name: DBType
