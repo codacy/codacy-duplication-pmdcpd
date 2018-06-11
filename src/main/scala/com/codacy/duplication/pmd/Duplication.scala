@@ -1,4 +1,4 @@
-package codacy.duplication.pmd
+package com.codacy.duplication.pmd
 
 import codacy.docker.api.duplication.DockerDuplication
 

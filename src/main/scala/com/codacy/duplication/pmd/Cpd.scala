@@ -1,4 +1,4 @@
-package codacy.duplication.pmd
+package com.codacy.duplication.pmd
 
 import java.io.{ByteArrayOutputStream, OutputStream, PrintStream}
 import java.nio.charset.StandardCharsets
@@ -11,7 +11,7 @@ import codacy.docker.api.{DuplicationConfiguration, Source}
 import com.codacy.api.dtos.{Language, Languages}
 import net.sourceforge._
 import net.sourceforge.pmd.cpd
-import net.sourceforge.pmd.cpd.{AbstractLanguage, Match}
+import net.sourceforge.pmd.cpd.Match
 import play.api.libs.json.{JsNumber, JsValue}
 
 import scala.collection.JavaConverters._
