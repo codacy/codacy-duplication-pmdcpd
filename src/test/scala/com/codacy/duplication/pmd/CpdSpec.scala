@@ -34,7 +34,7 @@ class CpdSpec extends Specification {
   }
 
   def javascriptTestGeneric(): MatchResult[Try[List[DuplicationClone]]] = {
-    val codePath = s"$targetDir/codacy/duplication/pmd/javascript/misc"
+    val codePath = s"$targetDir/com/codacy/duplication/pmd/javascript/misc"
     val clonesTry: Try[List[DuplicationClone]] =
       executeDuplication(codePath, Some(Languages.Javascript))
 
@@ -51,7 +51,8 @@ class CpdSpec extends Specification {
   }
 
   def javascriptTestComments(): MatchResult[Try[List[DuplicationClone]]] = {
-    val commentsPath = s"$targetDir/codacy/duplication/pmd/javascript/comments"
+    val commentsPath =
+      s"$targetDir/com/codacy/duplication/pmd/javascript/comments"
     val clonesTry: Try[List[DuplicationClone]] =
       executeDuplication(commentsPath, Some(Languages.Javascript))
 
@@ -67,7 +68,7 @@ class CpdSpec extends Specification {
   }
 
   def noLanguageTest(): MatchResult[Try[List[DuplicationClone]]] = {
-    val codePath = s"$targetDir/codacy/duplication/pmd/scala"
+    val codePath = s"$targetDir/com/codacy/duplication/pmd/scala"
     val clonesTry =
       executeDuplication(codePath, None, Map.empty)
 
@@ -83,7 +84,7 @@ class CpdSpec extends Specification {
   }
 
   def scalaTest(): MatchResult[Try[List[DuplicationClone]]] = {
-    val codePath = s"$targetDir/codacy/duplication/pmd/scala"
+    val codePath = s"$targetDir/com/codacy/duplication/pmd/scala"
     val clonesTry =
       executeDuplication(codePath, Some(Languages.Scala), Map.empty)
 
@@ -99,7 +100,7 @@ class CpdSpec extends Specification {
   }
 
   def javaTest(): MatchResult[Try[List[DuplicationClone]]] = {
-    val codePath = s"$targetDir/codacy/duplication/pmd/java"
+    val codePath = s"$targetDir/com/codacy/duplication/pmd/java"
     val clonesTry =
       executeDuplication(codePath, Some(Languages.Java), Map.empty)
 
@@ -117,7 +118,7 @@ class CpdSpec extends Specification {
 
   def pythonTest(): MatchResult[Try[List[DuplicationClone]]] = {
 
-    val codePath = s"$targetDir/codacy/duplication/pmd/python"
+    val codePath = s"$targetDir/com/codacy/duplication/pmd/python"
     val clonesTry =
       executeDuplication(codePath, Some(Languages.Python))
 
@@ -148,7 +149,7 @@ class CpdSpec extends Specification {
 
   def cSharpTest(): MatchResult[Try[List[DuplicationClone]]] = {
 
-    val codePath = s"$targetDir/codacy/duplication/pmd/csharp"
+    val codePath = s"$targetDir/com/codacy/duplication/pmd/csharp"
     val clonesTry =
       executeDuplication(codePath, Some(Languages.CSharp))
 

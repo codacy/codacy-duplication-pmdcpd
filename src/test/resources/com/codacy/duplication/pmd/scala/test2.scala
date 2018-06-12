@@ -1,4 +1,4 @@
-package analysis.duplication.scala
+package com.codacy.duplication.pmd.scala
 
 import java.io
 import java.io.File

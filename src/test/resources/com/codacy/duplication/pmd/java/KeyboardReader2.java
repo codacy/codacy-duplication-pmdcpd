@@ -1,3 +1,5 @@
+package com.codacy.duplication.pmd.java;
+
 import java.io.*;
 import java.util.*;
 import foo.bar.baz
