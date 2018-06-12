@@ -1,71 +1,44 @@
-import com.typesafe.sbt.packager.docker.Cmd
-import Dependencies._
-import sbt.Keys.libraryDependencies
+import sbt.Keys._
+import sbt._
 
 name := """codacy-duplication-pmdcpd"""
 
 version := "1.0.0-SNAPSHOT"
 
 val scalaBinaryVersionNumber = "2.12"
-val languageVersion = s"$scalaBinaryVersionNumber.4"
+val scalaVersionNumber = s"$scalaBinaryVersionNumber.4"
 
-scalaVersion := languageVersion
+scalaVersion := scalaVersionNumber
+scalaVersion in ThisBuild := scalaVersionNumber
+scalaBinaryVersion in ThisBuild := scalaBinaryVersionNumber
 
-resolvers ++= Seq(
-  "Typesafe Repo" at "http://repo.typesafe.com/typesafe/releases/",
-  "Sonatype OSS Releases" at "https://oss.sonatype.org/content/repositories/releases"
-)
+scapegoatVersion in ThisBuild := "1.3.5"
 
-libraryDependencies ++= Seq(
-  playJson withSources(),
-  duplicationScalaSeed withSources(),
-  scalaPmd withSources(),
-  javaPmd withSources(),
-  javascriptPmd withSources(),
-  rubyPmd withSources(),
-  pythonPmd withSources(),
-  csPmd withSources(),
-  scalaMeta withSources(),
-  specs2 % Test
-)
-
-// FIXES: package database contains object and package with same name: DBType
-scalacOptions := scalacOptions.value.filterNot(_ == "-Xfatal-warnings") ++ Seq("-Yresolve-term-conflict:object")
-
-enablePlugins(JavaAppPackaging)
-
-enablePlugins(DockerPlugin)
-
-mappings in Universal <++= (resourceDirectory in Compile) map { (resourceDir: File) =>
-  val src = resourceDir / "docs"
-  val dest = "/docs"
-
-  for {
-    path <- (src ***).get
-    if !path.isDirectory
-  } yield path -> path.toString.replaceFirst(src.toString, dest)
-}
-
-val dockerUser = "docker"
-val dockerGroup = "docker"
-
-daemonUser in Docker := dockerUser
-
-daemonGroup in Docker := dockerGroup
-
-dockerBaseImage := "develar/java"
-
-val installAll = """apk update && apk add bash curl &&
-                   |rm -rf /tmp/* &&
-                   |rm -rf /var/cache/apk/*""".stripMargin.replaceAll(System.lineSeparator(), " ")
-
-dockerCommands := dockerCommands.value.flatMap {
-  case cmd@Cmd("WORKDIR", _) => List(cmd,
-    Cmd("RUN", installAll)
-  )
-
-  case cmd@(Cmd("ADD", "opt /opt")) => List(cmd,
-    Cmd("RUN", s"adduser -u 2004 -D $dockerUser")
-  )
-  case other => List(other)
-}
+lazy val codacyDuplictionPmdCpd = project
+  .in(file("."))
+  .enablePlugins(JavaAppPackaging)
+  .enablePlugins(DockerPlugin)
+  .settings(
+    inThisBuild(
+      List(
+        organization := "com.codacy",
+        scalaVersion := scalaVersionNumber,
+        version := "0.1.0-SNAPSHOT",
+        scalacOptions ++= Common.compilerFlags,
+        scalacOptions in Test ++= Seq("-Yrangepos"),
+        scalacOptions in (Compile, console) --= Seq("-Ywarn-unused:imports", "-Xfatal-warnings"))),
+    name := "codacy-duplication-pmdcpd",
+    // App Dependencies
+    libraryDependencies ++= Seq(
+      Dependencies.Codacy.duplicationSeed withSources(),
+      Dependencies.playJson,
+      Dependencies.scalaMeta,
+      Dependencies.csPmd,
+      Dependencies.javaPmd,
+      Dependencies.javascriptPmd,
+      Dependencies.pythonPmd,
+      Dependencies.rubyPmd,
+      Dependencies.scalaPmd),
+    // Test Dependencies
+    libraryDependencies ++= Seq(Dependencies.specs2).map(_ % Test))
+  .settings(Common.dockerSettings: _*)

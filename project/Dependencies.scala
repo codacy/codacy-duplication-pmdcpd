@@ -2,8 +2,12 @@ import sbt._
 
 object Dependencies {
 
+  object Codacy {
+    val duplicationSeed = "com.codacy" %% "codacy-duplication-scala-seed" % "0.1.81"
+  }
+
   val playJson = "com.typesafe.play" %% "play-json" % "2.6.9"
-  val duplicationScalaSeed = "com.codacy" %% "codacy-duplication-scala-seed" % "0.1.81"
+
   val scalaMeta = "org.scalameta" %% "scalameta" % "1.4.0"
 
   private val pmdGroupArtifactID = "net.sourceforge.pmd"
