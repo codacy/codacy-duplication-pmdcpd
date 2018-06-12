@@ -11,8 +11,7 @@ private[pmd] object ScalaTokenizer extends Tokenizer {
 
   import scala.meta.{Tree => MetaTree, _}
 
-  override def tokenize(sourceCode: SourceCode,
-                        tokenEntries: CpdTokens): Unit = {
+  override def tokenize(sourceCode: SourceCode, tokenEntries: CpdTokens): Unit = {
 
     val fileName = sourceCode.getFileName
 
@@ -23,34 +22,27 @@ private[pmd] object ScalaTokenizer extends Tokenizer {
       case Success(Parsed.Error(position, message, details)) =>
         throw new TokenMgrError(
           s"Lexical error in file $fileName. The scala tokenizer exited with error on $position: " + message + details,
-          TokenMgrError.LEXICAL_ERROR
-        )
+          TokenMgrError.LEXICAL_ERROR)
       case Failure(error) =>
         throw new TokenMgrError(
           s"Lexical error in file $fileName. The scala tokenizer exited with error: " + error.getMessage,
-          TokenMgrError.LEXICAL_ERROR
-        )
+          TokenMgrError.LEXICAL_ERROR)
     }
   }
 
   private[this] def matchesInTree(tree: MetaTree, filename: String) = {
     import Token._
-    val tokens = Option(tree).toSeq
-      .flatMap {
-        case t @ source"..${stats: Seq[Stat]}" if stats.size == 1 =>
-          stats.headOption
-            .collect {
-              case q"package $ref { ..${stats: Seq[Stat]} }" =>
-                stats.dropWhile {
-                  case q"import ..$importersnel" => true
-                  case _                         => false
-                }
+    val tokens = Option(tree).toSeq.flatMap {
+      case t @ source"..${stats: Seq[Stat]}" if stats.size == 1 =>
+        stats.headOption.collect {
+          case q"package ${ref @ _} { ..${stats: Seq[Stat]} }" =>
+            stats.dropWhile {
+              case q"import ..${importersnel @ _}" => true
+              case _                               => false
             }
-            .getOrElse(Seq(t))
-        case nonDefaultTree => Seq(nonDefaultTree)
-      }
-      .flatMap(_.tokens.filterNot(t =>
-        t.isInstanceOf[Comment] || t.isInstanceOf[Space]))
+        }.getOrElse(Seq(t))
+      case nonDefaultTree => Seq(nonDefaultTree)
+    }.flatMap(_.tokens.filterNot(t => t.isInstanceOf[Comment] || t.isInstanceOf[Space]))
 
     tokens.collect {
       case token if !token.isInstanceOf[EOF] =>
