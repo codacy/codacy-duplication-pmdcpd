@@ -78,7 +78,7 @@ class CpdSpec extends Specification {
         clones must haveLength(1)
 
         val clone = clones.head
-        testClone(clone)(codePath, 21, 134, 2)
+        testClone(clone)(codePath, 18, 131, 2)
     }
   }
 
@@ -94,7 +94,7 @@ class CpdSpec extends Specification {
         clones must haveLength(1)
 
         val clone = clones.head
-        testClone(clone)(codePath, 21, 134, 2)
+        testClone(clone)(codePath, 18, 131, 2)
     }
   }
 
