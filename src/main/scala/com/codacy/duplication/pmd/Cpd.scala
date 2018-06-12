@@ -20,7 +20,13 @@ import scala.util.{Failure, Success, Try}
 object Cpd extends DuplicationTool {
 
   private val allLanguages: List[Language] =
-    List(Languages.Python, Languages.Ruby, Languages.Java, Languages.Javascript, Languages.Scala, Languages.CSharp)
+    List[Language](
+      Languages.Python,
+      Languages.Ruby,
+      Languages.Java,
+      Languages.Javascript,
+      Languages.Scala,
+      Languages.CSharp)
 
   override def apply(
     path: Source.Directory,
