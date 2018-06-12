@@ -42,15 +42,19 @@ private[pmd] object ScalaTokenizer extends Tokenizer {
             }
         }.getOrElse(Seq(t))
       case nonDefaultTree => Seq(nonDefaultTree)
-    }.flatMap(_.tokens.filterNot(t => t.isInstanceOf[Comment] || t.isInstanceOf[Space]))
+    }.flatMap(_.tokens.filterNot {
+      case _: Comment | _: Space => true
+      case _                     => false
+    })
 
-    tokens.collect {
-      case token if !token.isInstanceOf[EOF] =>
+    tokens.flatMap {
+      case _: EOF => Seq.empty
+      case token =>
         val str = token match {
           case _: BOF => "BOF"
           case other  => other.show[Syntax]
         }
-        new TokenEntry(str, filename, token.pos.start.line + 1)
+        Seq(new TokenEntry(str, filename, token.pos.start.line + 1))
     }
   }
 
