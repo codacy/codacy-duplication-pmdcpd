@@ -33,9 +33,10 @@ object Cpd extends DuplicationTool {
     language: Option[Language],
     options: Map[DuplicationConfiguration.Key, DuplicationConfiguration.Value]): Try[List[DuplicationClone]] = {
     val baos = new ByteArrayOutputStream()
-    val stdErr = System.err
 
     System.setErr(new PrintStream(baos, true, "utf-8"))
+    val stdErr = System.err
+
     val directoryPath: Path = (File.currentWorkingDirectory / path.path).path
 
     getLanguages(language).map { languages =>
@@ -70,8 +71,6 @@ object Cpd extends DuplicationTool {
     errStream: PrintStream): List[DuplicationClone] = {
     val cpd = new pmd.cpd.CPD(config)
     cpd.addRecursively(directory.toFile)
-
-    System.setErr(errStream)
 
     cpd.go()
 
