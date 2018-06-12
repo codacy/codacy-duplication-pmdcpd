@@ -5,11 +5,11 @@ import java.io.File
 import net.sourceforge.pmd.cpd.{Tokens => CpdTokens, _}
 import net.sourceforge.pmd.lang.ast.TokenMgrError
 
+import scala.meta.Token._
+import scala.meta.{Tree => MetaTree, _}
 import scala.util.{Failure, Success, Try}
 
 private[pmd] object ScalaTokenizer extends Tokenizer {
-
-  import scala.meta.{Tree => MetaTree, _}
 
   override def tokenize(sourceCode: SourceCode, tokenEntries: CpdTokens): Unit = {
 
@@ -31,7 +31,7 @@ private[pmd] object ScalaTokenizer extends Tokenizer {
   }
 
   private[this] def matchesInTree(tree: MetaTree, filename: String) = {
-    import Token._
+
     val tokens = Option(tree).toSeq.flatMap {
       case t @ source"..${stats: Seq[Stat]}" if stats.size == 1 =>
         stats.headOption.collect {
