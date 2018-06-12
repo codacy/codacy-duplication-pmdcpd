@@ -27,9 +27,8 @@ class CpdSpec extends Specification {
 
   def executeDuplication(dir: String,
                          language: Option[Language],
-                         options: Map[DuplicationConfiguration.Key,
-                                      DuplicationConfiguration.Value] =
-                           Map.empty): Try[List[DuplicationClone]] = {
+                         options: Map[DuplicationConfiguration.Key, DuplicationConfiguration.Value] = Map.empty)
+    : Try[List[DuplicationClone]] = {
     Cpd(path = Source.Directory(dir), language = language, options)
   }
 
@@ -133,10 +132,10 @@ class CpdSpec extends Specification {
   }
 
   private def testClone(clone: DuplicationClone)(
-      dir: String,
-      nrLines: Int,
-      nrTokens: Int,
-      filesNr: Int): MatchResult[GenTraversableOnce[DuplicationCloneFile]] = {
+    dir: String,
+    nrLines: Int,
+    nrTokens: Int,
+    filesNr: Int): MatchResult[GenTraversableOnce[DuplicationCloneFile]] = {
 
     clone.nrLines must beEqualTo(nrLines)
     clone.nrTokens must beEqualTo(nrTokens)

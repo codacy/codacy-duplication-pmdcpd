@@ -30,7 +30,7 @@ lazy val codacyDuplictionPmdCpd = project
     name := "codacy-duplication-pmdcpd",
     // App Dependencies
     libraryDependencies ++= Seq(
-      Dependencies.Codacy.duplicationSeed withSources(),
+      Dependencies.Codacy.duplicationSeed withSources (),
       Dependencies.playJson,
       Dependencies.scalaMeta,
       Dependencies.csPmd,

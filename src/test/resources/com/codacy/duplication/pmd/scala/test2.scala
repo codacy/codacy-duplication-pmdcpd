@@ -21,16 +21,13 @@ trait test2 {
   protected def parseClones(rootCanonicalPath: String, lines: Seq[String]): Option[Seq[Clone]]
 
   def getClones(directory: Directory): Option[Seq[Clone]] = {
-    FileSystemProvider.withRandomFile {
-      outputFile =>
-        val rootCanonicalPath = new io.File(directory.path).getCanonicalPath
-        runTool(rootCanonicalPath, outputFile).flatMap {
-          output =>
-            FileContents.getLines(outputFile).flatMap {
-              lines =>
-                parseClones(rootCanonicalPath, lines)
-            }
+    FileSystemProvider.withRandomFile { outputFile =>
+      val rootCanonicalPath = new io.File(directory.path).getCanonicalPath
+      runTool(rootCanonicalPath, outputFile).flatMap { output =>
+        FileContents.getLines(outputFile).flatMap { lines =>
+          parseClones(rootCanonicalPath, lines)
         }
+      }
     }
   }
 
