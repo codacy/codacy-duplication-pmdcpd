@@ -1,17 +1,13 @@
 package com.codacy.duplication.pmd
 
 import java.io.{ByteArrayOutputStream, PrintStream}
-import java.nio.charset.StandardCharsets
 import java.nio.file.{Path, Paths}
-import java.util
 
 import better.files.File
 import codacy.docker.api.duplication._
 import codacy.docker.api.{DuplicationConfiguration, Source}
 import com.codacy.api.dtos.{Language, Languages}
-import net.sourceforge._
-import net.sourceforge.pmd.cpd
-import net.sourceforge.pmd.cpd.Match
+import net.sourceforge.pmd.cpd.{Language => CPDLanguage, _}
 import play.api.libs.json.{JsNumber, JsValue}
 
 import scala.collection.JavaConverters._
@@ -38,80 +34,68 @@ object Cpd extends DuplicationTool {
 
     val directoryPath: Path = (File.currentWorkingDirectory / path.path).path
 
-    getLanguages(language).map { languages =>
-      runCPD(directoryPath, languages, options)
-    } match {
-      case Success(matches) => Success(matches)
+    val cpdResultsTry = resolveLanguages(language).map { languages =>
+      resolveConfigurations(languages, options).flatMap(runWithConfiguration(_, directoryPath))
+    }
+
+    cpdResultsTry match {
       case Failure(e) =>
-        val errString = new String(baos.toByteArray, StandardCharsets.UTF_8)
         val msg =
-          s"""|Failed to execute duplication: ${e.getMessage}
-              |std:
-              |$errString
-         """.stripMargin
-        baos.close()
-
+          s"Failed to execute duplication: ${e.getMessage}"
         Failure(new Exception(msg, e))
+      case Success(results) => Success(results)
     }
   }
 
-  private def runCPD(
-    directory: Path,
-    languages: List[(pmd.cpd.Language, Int)],
-    options: Map[DuplicationConfiguration.Key, DuplicationConfiguration.Value]): List[DuplicationClone] = {
-
-    languages.flatMap {
-      case (lang, minTokenMatch) =>
-        val configuration = getConfiguration(lang, minTokenMatch, options)
-        runWithConfiguration(configuration, directory)
-    }
-
-  }
-
-  private def runWithConfiguration(config: pmd.cpd.CPDConfiguration, directory: Path): List[DuplicationClone] = {
-    val cpd = new pmd.cpd.CPD(config)
+  private def runWithConfiguration(config: CPDConfiguration, directory: Path): List[DuplicationClone] = {
+    val cpd = new CPD(config)
     cpd.addRecursively(directory.toFile)
-
     cpd.go()
-
-    val res: util.Iterator[Match] = cpd.getMatches
-    res.asScala.map(duplicationClone(_, directory)).toList
+    cpd.getMatches.asScala.map(duplicationClone(_, directory)).toList
   }
 
-  private def getLanguages(language: Option[Language]): Try[List[(pmd.cpd.Language, Int)]] = {
-
-    val languagesOpt: Option[Try[List[(cpd.Language, Int)]]] =
-      language.map { lang =>
-        configOptions(lang) match {
-          case Some(config) => Success(List(config))
-          case None =>
-            Failure(new Throwable(s"Cpd.getLanguages: there is no language with key $lang"))
-        }
-      }
-
-    languagesOpt.getOrElse(Success(allLanguages.flatMap(configOptions)))
-  }
-
-  private def configOptions(language: Language): Option[(pmd.cpd.Language, Int)] = {
+  private def resolveLanguages(language: Option[Language]): Try[List[Language]] = {
     language match {
-      case Languages.Python     => Some((new pmd.cpd.PythonLanguage, 50))
-      case Languages.Ruby       => Some((new pmd.cpd.RubyLanguage, 50))
-      case Languages.Java       => Some((new pmd.cpd.JavaLanguage, 100))
-      case Languages.Javascript => Some((new pmd.cpd.EcmascriptLanguage, 40))
+      case Some(lang) =>
+        if (allLanguages.contains(lang)) {
+          Success(List(lang))
+        } else {
+          val message = s"$lang language is not supported"
+          Failure(new Exception(message))
+        }
+      case None => Success(allLanguages)
+    }
+  }
+
+  private def resolveConfigurations(
+    languages: List[Language],
+    options: Map[DuplicationConfiguration.Key, DuplicationConfiguration.Value]): List[CPDConfiguration] = {
+
+    languages.flatMap(resolveConfiguration(_, options))
+  }
+
+  private def resolveConfiguration(
+    language: Language,
+    options: Map[DuplicationConfiguration.Key, DuplicationConfiguration.Value]): Option[CPDConfiguration] = {
+    language match {
+      case Languages.Python     => Some(cpdConfiguration(new PythonLanguage, 50, options))
+      case Languages.Ruby       => Some(cpdConfiguration(new RubyLanguage, 50, options))
+      case Languages.Java       => Some(cpdConfiguration(new JavaLanguage, 100, options))
+      case Languages.Javascript => Some(cpdConfiguration(new EcmascriptLanguage, 40, options))
       case Languages.Scala =>
-        val cpdScala = new pmd.cpd.ScalaLanguage
-        val scalaLanguage = new pmd.cpd.AbstractLanguage(
+        val cpdScala = new ScalaLanguage
+        val scalaLanguage = new AbstractLanguage(
           cpdScala.getName,
           cpdScala.getTerseName,
           ScalaTokenizer,
           cpdScala.getExtensions.asScala: _*) {}
-        Some((scalaLanguage, 50))
-      case Languages.CSharp => Some((new pmd.cpd.CsLanguage, 50))
+        Some(cpdConfiguration(scalaLanguage, 50, options))
+      case Languages.CSharp => Some(cpdConfiguration(new CsLanguage, 50, options))
       case _                => None
     }
   }
 
-  private def getConfiguration(cpdLanguage: pmd.cpd.Language,
+  private def cpdConfiguration(cpdLanguage: CPDLanguage,
                                defaultMinToken: Int,
                                options: Map[DuplicationConfiguration.Key, DuplicationConfiguration.Value]) = {
 
@@ -126,7 +110,7 @@ object Cpd extends DuplicationTool {
         }.getOrElse(defaultMinToken)
     }
 
-    val cfg = new pmd.cpd.CPDConfiguration()
+    val cfg = new CPDConfiguration()
     cfg.setLanguage(cpdLanguage)
     cfg.setIgnoreAnnotations(ignoreAnnotations)
     cfg.setSkipLexicalErrors(skipLexicalErrors)
@@ -134,7 +118,7 @@ object Cpd extends DuplicationTool {
     cfg
   }
 
-  private def duplicationClone(m: pmd.cpd.Match, rootDirectory: Path): DuplicationClone = {
+  private def duplicationClone(m: Match, rootDirectory: Path): DuplicationClone = {
     val files: List[DuplicationCloneFile] = m.getMarkSet.asScala.map { mark =>
       val file = rootDirectory.relativize(Paths.get(mark.getFilename))
       DuplicationCloneFile(file.toString, mark.getBeginLine, mark.getEndLine)
