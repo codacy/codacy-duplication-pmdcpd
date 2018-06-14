@@ -37,7 +37,7 @@ class CpdSpec extends Specification {
         clones should haveLength(1)
 
         val clone = clones.head
-        testClone(clone)(codePath, 194, 428, 2)
+        testClone(clone)(codePath, 194, 428, 2, List("angularFiles.js", "angularFiles1.js"))
       }
     }
   }
@@ -54,7 +54,7 @@ class CpdSpec extends Specification {
         clones must haveLength(1)
 
         val clone = clones.head
-        testClone(clone)(commentsPath, 18, 98, 2)
+        testClone(clone)(commentsPath, 18, 98, 2, List("comments-test1.js", "comments-test2.js"))
     }
   }
 
@@ -69,12 +69,12 @@ class CpdSpec extends Specification {
         clones must haveLength(1)
 
         val clone = clones.head
-        testClone(clone)(codePath, 18, 131, 2)
+        testClone(clone)(codePath, 18, 131, 2, List("test1.scala", "test2.scala"))
     }
   }
 
   private def scalaTest(): MatchResult[Try[List[DuplicationClone]]] = {
-    val codePath = "com/codacy/duplication/pmd/scala"
+    val codePath = "com/codacy/duplication/pmd"
     val clonesTry = executeDuplication(codePath, Some(Languages.Scala))
 
     clonesTry must beSuccessfulTry
@@ -84,12 +84,12 @@ class CpdSpec extends Specification {
         clones must haveLength(1)
 
         val clone = clones.head
-        testClone(clone)(codePath, 18, 131, 2)
+        testClone(clone)(codePath, 18, 131, 2, List("scala/test1.scala", "scala/test2.scala"))
     }
   }
 
   private def javaTest(): MatchResult[Try[List[DuplicationClone]]] = {
-    val codePath = "com/codacy/duplication/pmd/java"
+    val codePath = "com/codacy/duplication/pmd"
     val clonesTry = executeDuplication(codePath, Some(Languages.Java))
 
     clonesTry should beSuccessfulTry
@@ -99,13 +99,13 @@ class CpdSpec extends Specification {
         clones must haveLength(1)
 
         val clone = clones.head
-        testClone(clone)(codePath, 28, 115, 2)
+        testClone(clone)(codePath, 28, 115, 2, List("java/KeyboardReader.java", "java/KeyboardReader2.java"))
 
     }
   }
 
   private def pythonTest(): MatchResult[Try[List[DuplicationClone]]] = {
-    val codePath = "com/codacy/duplication/pmd/python"
+    val codePath = "com/codacy/duplication/pmd"
     val clonesTry = executeDuplication(codePath, Some(Languages.Python))
 
     clonesTry should beSuccessfulTry
@@ -113,13 +113,13 @@ class CpdSpec extends Specification {
     clonesTry must beLike {
       case Success(clones) =>
         clones must haveLength(2)
-        testClone(clones.head)(codePath, 31, 159, 2)
-        testClone(clones.drop(1).head)(codePath, 33, 69, 2)
+        testClone(clones.head)(codePath, 31, 159, 2, List("python/test1.py", "python/test2.py"))
+        testClone(clones.drop(1).head)(codePath, 33, 69, 2, List("python/test1.py", "python/test2.py"))
     }
   }
 
   private def cSharpTest(): MatchResult[Try[List[DuplicationClone]]] = {
-    val codePath = "com/codacy/duplication/pmd/csharp"
+    val codePath = "com/codacy/duplication/pmd"
     val clonesTry = executeDuplication(codePath, Some(Languages.CSharp))
 
     clonesTry should beSuccessfulTry
@@ -128,8 +128,8 @@ class CpdSpec extends Specification {
       case Success(clones) =>
         clones must haveLength(2)
 
-        testClone(clones.head)(codePath, 24, 66, 2)
-        testClone(clones(1))(codePath, 9, 53, 2)
+        testClone(clones.head)(codePath, 24, 66, 2, List("csharp/Test1.cs", "csharp/Test2.cs"))
+        testClone(clones(1))(codePath, 9, 53, 2, List("csharp/Test1.cs"))
     }
   }
 
@@ -144,11 +144,14 @@ class CpdSpec extends Specification {
     dir: String,
     nrLines: Int,
     nrTokens: Int,
-    filesNr: Int): MatchResult[GenTraversableOnce[DuplicationCloneFile]] = {
+    filesNr: Int,
+    duplicationPaths: List[String]): MatchResult[GenTraversableOnce[DuplicationCloneFile]] = {
 
     clone.nrLines must beEqualTo(nrLines)
     clone.nrTokens must beEqualTo(nrTokens)
     clone.files must haveLength(filesNr)
+
+    clone.files.map(_.filePath) must containAllOf(duplicationPaths)
 
     forall(clone.files) { file =>
       (file.filePath must not startWith "/") and
