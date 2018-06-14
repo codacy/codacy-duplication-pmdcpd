@@ -1,6 +1,7 @@
 package com.codacy.duplication.pmd
 
 import java.io.{ByteArrayOutputStream, PrintStream}
+import java.nio.charset.StandardCharsets
 import java.nio.file.{Path, Paths}
 
 import better.files.File
@@ -43,8 +44,12 @@ object Cpd extends DuplicationTool {
 
     cpdResultsTry match {
       case Failure(e) =>
+        val errString = new String(baos.toByteArray, StandardCharsets.UTF_8)
         val msg =
-          s"Failed to execute duplication: ${e.getMessage}"
+          s"""|Failed to execute duplication: ${e.getMessage}
+              |std:
+              |$errString
+         """.stripMargin
         Failure(new Exception(msg, e))
       case Success(results) => Success(results)
     }
