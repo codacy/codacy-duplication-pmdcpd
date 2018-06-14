@@ -1,23 +1,33 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/grade/d0f04e048bba4a01a7ef0166bf5b8d32)](https://www.codacy.com/app/Codacy/codacy-duplication-pmdcpd)
 [![Build Status](https://circleci.com/gh/codacy/codacy-duplication-pmdcpd.svg?style=shield&circle-token=:circle-token)](https://circleci.com/gh/codacy/codacy-duplication-pmdcpd)
+[![Docker Version](https://images.microbadger.com/badges/version/codacy/codacy-duplication-pmdcpd.svg)](https://microbadger.com/images/codacy/codacy-duplication-pmdcpd "Get your own version badge on microbadger.com")
 
 # Codacy Duplication PMD CPD
 
 This is the duplication docker we use at Codacy to have [PMD CPD](https://pmd.github.io/) support.
 You can also create a docker to integrate the tool and language of your choice!
-Check the **Docs** section for more information.
+             
+## Usage
 
-## Usage               
+You can create the docker by doing:
 
-> TODO
+```bash
+./scripts/publish.sh
+```
 
-## Docs
+The docker is ran with the following command:
 
-> TODO
+```bash
+docker run -it -v $srcDir:/src  <DOCKER_NAME>:<DOCKER_VERSION>
+docker run -it -v $PWD/src/test/resources:/src codacy/codacy-duplication-pmdcpd:latest
+```
 
 ## Test
 
-> TODO
+```bash
+./scripts/test.sh
+```
+
 
 ## What is Codacy?
 
