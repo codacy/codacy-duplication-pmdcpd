@@ -30,6 +30,7 @@ object Cpd extends DuplicationTool {
     options: Map[DuplicationConfiguration.Key, DuplicationConfiguration.Value]): Try[List[DuplicationClone]] = {
 
     val baos = new ByteArrayOutputStream()
+    val stdErr = System.err
     System.setErr(new PrintStream(baos, true, "utf-8"))
 
     val directoryPath: Path = (File.currentWorkingDirectory / path.path).path
@@ -37,6 +38,8 @@ object Cpd extends DuplicationTool {
     val cpdResultsTry = resolveLanguages(language).map { languages =>
       resolveConfigurations(languages, options).flatMap(runWithConfiguration(_, directoryPath))
     }
+
+    System.setErr(stdErr)
 
     cpdResultsTry match {
       case Failure(e) =>
