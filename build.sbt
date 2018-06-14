@@ -1,18 +1,8 @@
 import sbt.Keys._
 import sbt._
 
-name := """codacy-duplication-pmdcpd"""
-
-version := "1.0.0-SNAPSHOT"
-
 val scalaBinaryVersionNumber = "2.12"
 val scalaVersionNumber = s"$scalaBinaryVersionNumber.4"
-
-scalaVersion := scalaVersionNumber
-scalaVersion in ThisBuild := scalaVersionNumber
-scalaBinaryVersion in ThisBuild := scalaBinaryVersionNumber
-
-scapegoatVersion in ThisBuild := "1.3.5"
 
 lazy val codacyDuplictionPmdCpd = project
   .in(file("."))
@@ -42,3 +32,10 @@ lazy val codacyDuplictionPmdCpd = project
     // Test Dependencies
     libraryDependencies ++= Seq(Dependencies.specs2).map(_ % Test))
   .settings(Common.dockerSettings: _*)
+
+
+scalaVersion := scalaVersionNumber
+scalaVersion in ThisBuild := scalaVersionNumber
+scalaBinaryVersion in ThisBuild := scalaBinaryVersionNumber
+
+scapegoatVersion in ThisBuild := "1.3.5"
