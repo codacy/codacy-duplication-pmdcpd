@@ -22,17 +22,11 @@ lazy val codacyDuplictionPmdCpd = project
     libraryDependencies ++= Seq(
       Dependencies.Codacy.duplicationSeed withSources (),
       Dependencies.playJson,
-      Dependencies.scalaMeta,
-      Dependencies.csPmd,
-      Dependencies.javaPmd,
-      Dependencies.javascriptPmd,
-      Dependencies.pythonPmd,
-      Dependencies.rubyPmd,
-      Dependencies.scalaPmd),
+      Dependencies.scalaMeta) ++
+      Dependencies.pmdLanguages,
     // Test Dependencies
     libraryDependencies ++= Seq(Dependencies.specs2).map(_ % Test))
   .settings(Common.dockerSettings: _*)
-
 
 scalaVersion := scalaVersionNumber
 scalaVersion in ThisBuild := scalaVersionNumber

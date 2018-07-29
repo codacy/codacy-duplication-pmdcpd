@@ -3,14 +3,12 @@ package com.codacy.duplication.pmd
 import java.io.{ByteArrayOutputStream, PrintStream}
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Path, Paths}
-
 import better.files.File
 import codacy.docker.api.duplication._
 import codacy.docker.api.{DuplicationConfiguration, Source}
 import com.codacy.api.dtos.{Language, Languages}
 import net.sourceforge.pmd.cpd.{Language => CPDLanguage, _}
-import play.api.libs.json.{JsNumber, JsValue}
-
+import play.api.libs.json.{JsBoolean, JsNumber, JsValue}
 import scala.collection.JavaConverters._
 import scala.util.{Failure, Success, Try}
 
@@ -18,12 +16,17 @@ object Cpd extends DuplicationTool {
 
   private val allLanguages: List[Language] =
     List[Language](
+      Languages.CSharp,
+      Languages.C,
+      Languages.CPP,
+      Languages.Javascript,
+      Languages.Go,
+      Languages.Java,
+      Languages.SQL,
       Languages.Python,
       Languages.Ruby,
-      Languages.Java,
-      Languages.Javascript,
       Languages.Scala,
-      Languages.CSharp)
+      Languages.Swift)
 
   override def apply(
     path: Source.Directory,
@@ -86,10 +89,18 @@ object Cpd extends DuplicationTool {
     language: Language,
     options: Map[DuplicationConfiguration.Key, DuplicationConfiguration.Value]): Option[CPDConfiguration] = {
     language match {
+      case Languages.CSharp => Some(cpdConfiguration(new CsLanguage, 50, options))
+      case Languages.C | Languages.CPP =>
+        val language = new CPPLanguage()
+        language.setProperties(System.getProperties)
+        Some(cpdConfiguration(language, 50, options))
+      case Languages.Javascript => Some(cpdConfiguration(new EcmascriptLanguage, 40, options))
+      case Languages.Go         => Some(cpdConfiguration(new GoLanguage, 40, options))
+      case Languages.Java       => Some(cpdConfiguration(new JavaLanguage, 100, options))
+      case Languages.SQL        => Some(cpdConfiguration(new PLSQLLanguage, 100, options))
       case Languages.Python     => Some(cpdConfiguration(new PythonLanguage, 50, options))
       case Languages.Ruby       => Some(cpdConfiguration(new RubyLanguage, 50, options))
-      case Languages.Java       => Some(cpdConfiguration(new JavaLanguage, 100, options))
-      case Languages.Javascript => Some(cpdConfiguration(new EcmascriptLanguage, 40, options))
+      case Languages.Swift      => Some(cpdConfiguration(new SwiftLanguage, 50, options))
       case Languages.Scala =>
         val cpdScala = new ScalaLanguage
         val scalaLanguage = new AbstractLanguage(
@@ -98,31 +109,38 @@ object Cpd extends DuplicationTool {
           ScalaTokenizer,
           cpdScala.getExtensions.asScala: _*) {}
         Some(cpdConfiguration(scalaLanguage, 50, options))
-      case Languages.CSharp => Some(cpdConfiguration(new CsLanguage, 50, options))
-      case _                => None
+      case _ => None
+    }
+  }
+
+  // TODO: Move to codacy-plugins-api
+  implicit def boolean(value: JsValue): Option[Boolean] =
+    Option(value: JsValue).collect { case JsBoolean(bool) => bool }
+
+  implicit def int(value: JsValue): Option[Int] =
+    Option(value: JsValue).collect { case JsNumber(bigDecimal) => bigDecimal.toInt }
+
+  implicit class DuplicationConfigurationExtended(
+    options: Map[DuplicationConfiguration.Key, DuplicationConfiguration.Value]) {
+
+    def getValue[A](key: DuplicationConfiguration.Key, defaultValue: A)(implicit ev: JsValue => Option[A]): A = {
+      options.get(key).fold(defaultValue) { value: DuplicationConfiguration.Value =>
+        Option(value: JsValue).flatMap(ev).getOrElse(defaultValue)
+      }
     }
   }
 
   private def cpdConfiguration(cpdLanguage: CPDLanguage,
                                defaultMinToken: Int,
                                options: Map[DuplicationConfiguration.Key, DuplicationConfiguration.Value]) = {
-
-    val ignoreAnnotations = true
-    val skipLexicalErrors = true
-
-    val minTokenMatch: Int = options.get(DuplicationConfiguration.Key("minTokenMatch")).fold(defaultMinToken) {
-      value: DuplicationConfiguration.Value =>
-        Option(value: JsValue).collect {
-          case JsNumber(number) => number.toInt
-          case _                => defaultMinToken
-        }.getOrElse(defaultMinToken)
-    }
-
     val cfg = new CPDConfiguration()
     cfg.setLanguage(cpdLanguage)
-    cfg.setIgnoreAnnotations(ignoreAnnotations)
-    cfg.setSkipLexicalErrors(skipLexicalErrors)
-    cfg.setMinimumTileSize(minTokenMatch)
+    cfg.setIgnoreAnnotations(options.getValue[Boolean](DuplicationConfiguration.Key("ignoreAnnotations"), true))
+    cfg.setSkipLexicalErrors(options.getValue[Boolean](DuplicationConfiguration.Key("skipLexicalErrors"), true))
+    cfg.setMinimumTileSize(options.getValue[Int](DuplicationConfiguration.Key("minTokenMatch"), defaultMinToken))
+    cfg.setIgnoreIdentifiers(options.getValue[Boolean](DuplicationConfiguration.Key("ignoreIdentifiers"), true))
+    cfg.setIgnoreLiterals(options.getValue[Boolean](DuplicationConfiguration.Key("ignoreLiterals"), true))
+    cfg.setIgnoreUsings(options.getValue[Boolean](DuplicationConfiguration.Key("ignoreUsings"), true))
     cfg
   }
 
