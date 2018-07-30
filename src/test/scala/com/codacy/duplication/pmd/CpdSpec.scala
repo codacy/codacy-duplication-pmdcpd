@@ -11,6 +11,7 @@ import _root_.scala.util.{Success, Try}
 
 class CpdSpec extends Specification {
 
+  private val codePath = "com/codacy/duplication/pmd"
   val targetDir = "src/test/resources"
 
   "Cpd" should {
@@ -78,7 +79,6 @@ class CpdSpec extends Specification {
   }
 
   private def scalaTest(): MatchResult[Try[List[DuplicationClone]]] = {
-    val codePath = "com/codacy/duplication/pmd"
     val clonesTry = executeDuplication(codePath, Some(Languages.Scala))
 
     clonesTry must beSuccessfulTry
@@ -93,7 +93,6 @@ class CpdSpec extends Specification {
   }
 
   private def javaTest(): MatchResult[Try[List[DuplicationClone]]] = {
-    val codePath = "com/codacy/duplication/pmd"
     val clonesTry = executeDuplication(codePath, Some(Languages.Java))
 
     clonesTry should beSuccessfulTry
@@ -109,7 +108,6 @@ class CpdSpec extends Specification {
   }
 
   private def pythonTest(): MatchResult[Try[List[DuplicationClone]]] = {
-    val codePath = "com/codacy/duplication/pmd"
     val clonesTry = executeDuplication(codePath, Some(Languages.Python))
 
     clonesTry should beSuccessfulTry
@@ -123,7 +121,6 @@ class CpdSpec extends Specification {
   }
 
   private def cSharpTest(): MatchResult[Try[List[DuplicationClone]]] = {
-    val codePath = "com/codacy/duplication/pmd"
     val clonesTry = executeDuplication(codePath, Some(Languages.CSharp))
 
     clonesTry should beSuccessfulTry
@@ -138,7 +135,6 @@ class CpdSpec extends Specification {
   }
 
   private def cppTest(): MatchResult[Try[List[DuplicationClone]]] = {
-    val codePath = "com/codacy/duplication/pmd"
     val clonesTry = executeDuplication(codePath, Some(Languages.CPP))
 
     clonesTry should beSuccessfulTry
@@ -152,7 +148,6 @@ class CpdSpec extends Specification {
   }
 
   private def goTest(): MatchResult[Try[List[DuplicationClone]]] = {
-    val codePath = "com/codacy/duplication/pmd"
     val clonesTry = executeDuplication(codePath, Some(Languages.Go))
 
     clonesTry should beSuccessfulTry
@@ -167,7 +162,6 @@ class CpdSpec extends Specification {
   }
 
   private def plsqlTest(): MatchResult[Try[List[DuplicationClone]]] = {
-    val codePath = "com/codacy/duplication/pmd"
     val clonesTry = executeDuplication(codePath, Some(Languages.SQL))
 
     clonesTry should beSuccessfulTry
@@ -186,7 +180,6 @@ class CpdSpec extends Specification {
   }
 
   private def swiftTest(): MatchResult[Try[List[DuplicationClone]]] = {
-    val codePath = "com/codacy/duplication/pmd"
     val clonesTry = executeDuplication(codePath, Some(Languages.Swift))
 
     clonesTry should beSuccessfulTry

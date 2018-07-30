@@ -7,8 +7,8 @@ import better.files.File
 import codacy.docker.api.duplication._
 import codacy.docker.api.{DuplicationConfiguration, Source}
 import com.codacy.api.dtos.{Language, Languages}
+import com.codacy.docker.api.duplication._
 import net.sourceforge.pmd.cpd.{Language => CPDLanguage, _}
-import play.api.libs.json.{JsBoolean, JsNumber, JsValue}
 import scala.collection.JavaConverters._
 import scala.util.{Failure, Success, Try}
 
@@ -27,6 +27,13 @@ object Cpd extends DuplicationTool {
       Languages.Ruby,
       Languages.Scala,
       Languages.Swift)
+
+  private val ignoreAnnotationsKey = DuplicationConfiguration.Key("ignoreAnnotations")
+  private val skipLexicalErrorsKey = DuplicationConfiguration.Key("skipLexicalErrors")
+  private val minimumTileSizeKey = DuplicationConfiguration.Key("minTokenMatch")
+  private val ignoreIdentifiersKey = DuplicationConfiguration.Key("ignoreIdentifiers")
+  private val ignoreLiteralsKey = DuplicationConfiguration.Key("ignoreLiterals")
+  private val ignoreUsingsKey = DuplicationConfiguration.Key("ignoreUsings")
 
   override def apply(
     path: Source.Directory,
@@ -92,6 +99,7 @@ object Cpd extends DuplicationTool {
       case Languages.CSharp => Some(cpdConfiguration(new CsLanguage, 50, options))
       case Languages.C | Languages.CPP =>
         val language = new CPPLanguage()
+        // TODO: This workaround can be removed after 6.7.0
         language.setProperties(System.getProperties)
         Some(cpdConfiguration(language, 50, options))
       case Languages.Javascript => Some(cpdConfiguration(new EcmascriptLanguage, 40, options))
@@ -113,34 +121,17 @@ object Cpd extends DuplicationTool {
     }
   }
 
-  // TODO: Move to codacy-plugins-api
-  implicit def boolean(value: JsValue): Option[Boolean] =
-    Option(value: JsValue).collect { case JsBoolean(bool) => bool }
-
-  implicit def int(value: JsValue): Option[Int] =
-    Option(value: JsValue).collect { case JsNumber(bigDecimal) => bigDecimal.toInt }
-
-  implicit class DuplicationConfigurationExtended(
-    options: Map[DuplicationConfiguration.Key, DuplicationConfiguration.Value]) {
-
-    def getValue[A](key: DuplicationConfiguration.Key, defaultValue: A)(implicit ev: JsValue => Option[A]): A = {
-      options.get(key).fold(defaultValue) { value: DuplicationConfiguration.Value =>
-        Option(value: JsValue).flatMap(ev).getOrElse(defaultValue)
-      }
-    }
-  }
-
   private def cpdConfiguration(cpdLanguage: CPDLanguage,
                                defaultMinToken: Int,
                                options: Map[DuplicationConfiguration.Key, DuplicationConfiguration.Value]) = {
     val cfg = new CPDConfiguration()
     cfg.setLanguage(cpdLanguage)
-    cfg.setIgnoreAnnotations(options.getValue[Boolean](DuplicationConfiguration.Key("ignoreAnnotations"), true))
-    cfg.setSkipLexicalErrors(options.getValue[Boolean](DuplicationConfiguration.Key("skipLexicalErrors"), true))
-    cfg.setMinimumTileSize(options.getValue[Int](DuplicationConfiguration.Key("minTokenMatch"), defaultMinToken))
-    cfg.setIgnoreIdentifiers(options.getValue[Boolean](DuplicationConfiguration.Key("ignoreIdentifiers"), true))
-    cfg.setIgnoreLiterals(options.getValue[Boolean](DuplicationConfiguration.Key("ignoreLiterals"), true))
-    cfg.setIgnoreUsings(options.getValue[Boolean](DuplicationConfiguration.Key("ignoreUsings"), true))
+    cfg.setIgnoreAnnotations(options.getValue(ignoreAnnotationsKey, true))
+    cfg.setSkipLexicalErrors(options.getValue(skipLexicalErrorsKey, true))
+    cfg.setMinimumTileSize(options.getValue(minimumTileSizeKey, defaultMinToken))
+    cfg.setIgnoreIdentifiers(options.getValue(ignoreIdentifiersKey, true))
+    cfg.setIgnoreLiterals(options.getValue(ignoreLiteralsKey, true))
+    cfg.setIgnoreUsings(options.getValue(ignoreUsingsKey, true))
     cfg
   }
 
