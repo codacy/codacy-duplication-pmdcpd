@@ -11,17 +11,22 @@ import _root_.scala.util.{Success, Try}
 
 class CpdSpec extends Specification {
 
+  private val codePath = "com/codacy/duplication/pmd"
   val targetDir = "src/test/resources"
 
   "Cpd" should {
     "get duplication" in {
       " without defining a language, have 1 clone in 2 Scala files" in noLanguageTest()
-      " have 1 clone in 2 Scala files" in scalaTest()
+      " have 1 clone  in 2 Scala files" in scalaTest()
       " have 2 clones in 2 Java files" in javaTest()
       " have 2 clones in 2 Python files" in pythonTest()
-      " have clones in 2 Javascript files" in javascriptTestGeneric()
+      " have clones   in 2 Javascript files" in javascriptTestGeneric()
       " not have clones in comments" in javascriptTestComments()
       " have 2 clones in 2 CSharp files" in cSharpTest()
+      " have 1 clone  in 2 CPP files" in cppTest()
+      " have 2 clones in 2 Go files" in goTest()
+      " have 1 clone  in 2 PLSQL files" in plsqlTest()
+      " have 1 clone  in 2 Swift files" in swiftTest()
     }
   }
 
@@ -74,7 +79,6 @@ class CpdSpec extends Specification {
   }
 
   private def scalaTest(): MatchResult[Try[List[DuplicationClone]]] = {
-    val codePath = "com/codacy/duplication/pmd"
     val clonesTry = executeDuplication(codePath, Some(Languages.Scala))
 
     clonesTry must beSuccessfulTry
@@ -89,7 +93,6 @@ class CpdSpec extends Specification {
   }
 
   private def javaTest(): MatchResult[Try[List[DuplicationClone]]] = {
-    val codePath = "com/codacy/duplication/pmd"
     val clonesTry = executeDuplication(codePath, Some(Languages.Java))
 
     clonesTry should beSuccessfulTry
@@ -105,7 +108,6 @@ class CpdSpec extends Specification {
   }
 
   private def pythonTest(): MatchResult[Try[List[DuplicationClone]]] = {
-    val codePath = "com/codacy/duplication/pmd"
     val clonesTry = executeDuplication(codePath, Some(Languages.Python))
 
     clonesTry should beSuccessfulTry
@@ -119,7 +121,6 @@ class CpdSpec extends Specification {
   }
 
   private def cSharpTest(): MatchResult[Try[List[DuplicationClone]]] = {
-    val codePath = "com/codacy/duplication/pmd"
     val clonesTry = executeDuplication(codePath, Some(Languages.CSharp))
 
     clonesTry should beSuccessfulTry
@@ -130,6 +131,64 @@ class CpdSpec extends Specification {
 
         testClone(clones.head)(codePath, 24, 66, 2, List("csharp/Test1.cs", "csharp/Test2.cs"))
         testClone(clones(1))(codePath, 9, 53, 2, List("csharp/Test1.cs"))
+    }
+  }
+
+  private def cppTest(): MatchResult[Try[List[DuplicationClone]]] = {
+    val clonesTry = executeDuplication(codePath, Some(Languages.CPP))
+
+    clonesTry should beSuccessfulTry
+
+    clonesTry must beLike {
+      case Success(clones) =>
+        clones must haveLength(1)
+
+        testClone(clones.head)(codePath, 21, 145, 2, List("cpp/hmac_sha256.cpp", "cpp/hmac_sha512.cpp"))
+    }
+  }
+
+  private def goTest(): MatchResult[Try[List[DuplicationClone]]] = {
+    val clonesTry = executeDuplication(codePath, Some(Languages.Go))
+
+    clonesTry should beSuccessfulTry
+
+    clonesTry must beLike {
+      case Success(clones) =>
+        clones must haveLength(2)
+
+        testClone(clones.head)(codePath, 30, 119, 2, List("go/rsa.go", "go/rsa.1.go"))
+        testClone(clones(1))(codePath, 10, 47, 2, List("go/rsa.go", "go/rsa.1.go"))
+    }
+  }
+
+  private def plsqlTest(): MatchResult[Try[List[DuplicationClone]]] = {
+    val clonesTry = executeDuplication(codePath, Some(Languages.SQL))
+
+    clonesTry should beSuccessfulTry
+
+    clonesTry must beLike {
+      case Success(clones) =>
+        clones must haveLength(1)
+
+        testClone(clones.head)(
+          codePath,
+          18,
+          126,
+          2,
+          List("plsql/pljson_parser.impl.sql", "plsql/pljson_parser.impl.1.sql"))
+    }
+  }
+
+  private def swiftTest(): MatchResult[Try[List[DuplicationClone]]] = {
+    val clonesTry = executeDuplication(codePath, Some(Languages.Swift))
+
+    clonesTry should beSuccessfulTry
+
+    clonesTry must beLike {
+      case Success(clones) =>
+        clones must haveLength(1)
+
+        testClone(clones.head)(codePath, 20, 104, 2, List("swift/RegexLexer.swift", "swift/RegexLexer.1.swift"))
     }
   }
 

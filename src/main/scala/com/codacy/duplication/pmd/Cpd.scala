@@ -3,14 +3,12 @@ package com.codacy.duplication.pmd
 import java.io.{ByteArrayOutputStream, PrintStream}
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Path, Paths}
-
 import better.files.File
 import codacy.docker.api.duplication._
 import codacy.docker.api.{DuplicationConfiguration, Source}
 import com.codacy.api.dtos.{Language, Languages}
+import com.codacy.docker.api.duplication._
 import net.sourceforge.pmd.cpd.{Language => CPDLanguage, _}
-import play.api.libs.json.{JsNumber, JsValue}
-
 import scala.collection.JavaConverters._
 import scala.util.{Failure, Success, Try}
 
@@ -18,12 +16,24 @@ object Cpd extends DuplicationTool {
 
   private val allLanguages: List[Language] =
     List[Language](
+      Languages.CSharp,
+      Languages.C,
+      Languages.CPP,
+      Languages.Javascript,
+      Languages.Go,
+      Languages.Java,
+      Languages.SQL,
       Languages.Python,
       Languages.Ruby,
-      Languages.Java,
-      Languages.Javascript,
       Languages.Scala,
-      Languages.CSharp)
+      Languages.Swift)
+
+  private val ignoreAnnotationsKey = DuplicationConfiguration.Key("ignoreAnnotations")
+  private val skipLexicalErrorsKey = DuplicationConfiguration.Key("skipLexicalErrors")
+  private val minimumTileSizeKey = DuplicationConfiguration.Key("minTokenMatch")
+  private val ignoreIdentifiersKey = DuplicationConfiguration.Key("ignoreIdentifiers")
+  private val ignoreLiteralsKey = DuplicationConfiguration.Key("ignoreLiterals")
+  private val ignoreUsingsKey = DuplicationConfiguration.Key("ignoreUsings")
 
   override def apply(
     path: Source.Directory,
@@ -86,10 +96,19 @@ object Cpd extends DuplicationTool {
     language: Language,
     options: Map[DuplicationConfiguration.Key, DuplicationConfiguration.Value]): Option[CPDConfiguration] = {
     language match {
+      case Languages.CSharp => Some(cpdConfiguration(new CsLanguage, 50, options))
+      case Languages.C | Languages.CPP =>
+        val language = new CPPLanguage()
+        // TODO: This workaround can be removed after 6.7.0
+        language.setProperties(System.getProperties)
+        Some(cpdConfiguration(language, 50, options))
+      case Languages.Javascript => Some(cpdConfiguration(new EcmascriptLanguage, 40, options))
+      case Languages.Go         => Some(cpdConfiguration(new GoLanguage, 40, options))
+      case Languages.Java       => Some(cpdConfiguration(new JavaLanguage, 100, options))
+      case Languages.SQL        => Some(cpdConfiguration(new PLSQLLanguage, 100, options))
       case Languages.Python     => Some(cpdConfiguration(new PythonLanguage, 50, options))
       case Languages.Ruby       => Some(cpdConfiguration(new RubyLanguage, 50, options))
-      case Languages.Java       => Some(cpdConfiguration(new JavaLanguage, 100, options))
-      case Languages.Javascript => Some(cpdConfiguration(new EcmascriptLanguage, 40, options))
+      case Languages.Swift      => Some(cpdConfiguration(new SwiftLanguage, 50, options))
       case Languages.Scala =>
         val cpdScala = new ScalaLanguage
         val scalaLanguage = new AbstractLanguage(
@@ -98,31 +117,21 @@ object Cpd extends DuplicationTool {
           ScalaTokenizer,
           cpdScala.getExtensions.asScala: _*) {}
         Some(cpdConfiguration(scalaLanguage, 50, options))
-      case Languages.CSharp => Some(cpdConfiguration(new CsLanguage, 50, options))
-      case _                => None
+      case _ => None
     }
   }
 
   private def cpdConfiguration(cpdLanguage: CPDLanguage,
                                defaultMinToken: Int,
                                options: Map[DuplicationConfiguration.Key, DuplicationConfiguration.Value]) = {
-
-    val ignoreAnnotations = true
-    val skipLexicalErrors = true
-
-    val minTokenMatch: Int = options.get(DuplicationConfiguration.Key("minTokenMatch")).fold(defaultMinToken) {
-      value: DuplicationConfiguration.Value =>
-        Option(value: JsValue).collect {
-          case JsNumber(number) => number.toInt
-          case _                => defaultMinToken
-        }.getOrElse(defaultMinToken)
-    }
-
     val cfg = new CPDConfiguration()
     cfg.setLanguage(cpdLanguage)
-    cfg.setIgnoreAnnotations(ignoreAnnotations)
-    cfg.setSkipLexicalErrors(skipLexicalErrors)
-    cfg.setMinimumTileSize(minTokenMatch)
+    cfg.setIgnoreAnnotations(options.getValue(ignoreAnnotationsKey, true))
+    cfg.setSkipLexicalErrors(options.getValue(skipLexicalErrorsKey, true))
+    cfg.setMinimumTileSize(options.getValue(minimumTileSizeKey, defaultMinToken))
+    cfg.setIgnoreIdentifiers(options.getValue(ignoreIdentifiersKey, true))
+    cfg.setIgnoreLiterals(options.getValue(ignoreLiteralsKey, true))
+    cfg.setIgnoreUsings(options.getValue(ignoreUsingsKey, true))
     cfg
   }
 
