@@ -21,7 +21,15 @@ object Common {
     dockerCmd := Seq(),
     dockerCommands := dockerCommands.value.flatMap {
       case cmd @ Cmd("ADD", _) =>
-        List(Cmd("RUN", "adduser -u 2004 -D docker"), cmd)
+        List(
+          Cmd("RUN", "adduser -u 2004 -D docker"),
+          Cmd(
+            "RUN",
+            """|apk update
+               |&& apk add --no-cache bash
+               |&& rm -rf /tmp/* /var/cache/apk/*
+          """.stripMargin.replaceAll(System.lineSeparator(), " ")),
+          cmd)
 
       case other => List(other)
     })

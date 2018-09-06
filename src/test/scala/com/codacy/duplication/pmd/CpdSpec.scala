@@ -1,8 +1,8 @@
 package com.codacy.duplication.pmd
 
-import codacy.docker.api.duplication.{DuplicationClone, DuplicationCloneFile}
-import codacy.docker.api.{DuplicationConfiguration, Source}
-import com.codacy.api.dtos.{Language, Languages}
+import com.codacy.plugins.api.duplication.{DuplicationClone, DuplicationCloneFile}
+import com.codacy.plugins.api.languages.{Language, Languages}
+import com.codacy.plugins.api.{Options, Source}
 import org.specs2.matcher.MatchResult
 import org.specs2.mutable.Specification
 
@@ -194,8 +194,7 @@ class CpdSpec extends Specification {
 
   private def executeDuplication(dir: String,
                                  language: Option[Language],
-                                 options: Map[DuplicationConfiguration.Key, DuplicationConfiguration.Value] = Map.empty)
-    : Try[List[DuplicationClone]] = {
+                                 options: Map[Options.Key, Options.Value] = Map.empty): Try[List[DuplicationClone]] = {
     Cpd(path = Source.Directory(s"$targetDir/$dir"), language = language, options)
   }
 

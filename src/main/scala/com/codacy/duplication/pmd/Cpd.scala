@@ -1,16 +1,18 @@
 package com.codacy.duplication.pmd
 
-import java.io.{ByteArrayOutputStream, PrintStream}
-import java.nio.charset.StandardCharsets
-import java.nio.file.{Path, Paths}
+import _root_.java.io.{ByteArrayOutputStream, PrintStream}
+import _root_.java.nio.charset.StandardCharsets
+import _root_.java.nio.file.{Path, Paths}
+
 import better.files.File
-import codacy.docker.api.duplication._
-import codacy.docker.api.{DuplicationConfiguration, Source}
-import com.codacy.api.dtos.{Language, Languages}
 import com.codacy.docker.api.duplication._
+import com.codacy.plugins.api.duplication.{DuplicationClone, DuplicationCloneFile, DuplicationTool}
+import com.codacy.plugins.api.languages.{Language, Languages}
+import com.codacy.plugins.api.{Options, Source}
 import net.sourceforge.pmd.cpd.{Language => CPDLanguage, _}
-import scala.collection.JavaConverters._
-import scala.util.{Failure, Success, Try}
+
+import _root_.scala.collection.JavaConverters._
+import _root_.scala.util.{Failure, Success, Try}
 
 object Cpd extends DuplicationTool {
 
@@ -28,17 +30,16 @@ object Cpd extends DuplicationTool {
       Languages.Scala,
       Languages.Swift)
 
-  private val ignoreAnnotationsKey = DuplicationConfiguration.Key("ignoreAnnotations")
-  private val skipLexicalErrorsKey = DuplicationConfiguration.Key("skipLexicalErrors")
-  private val minimumTileSizeKey = DuplicationConfiguration.Key("minTokenMatch")
-  private val ignoreIdentifiersKey = DuplicationConfiguration.Key("ignoreIdentifiers")
-  private val ignoreLiteralsKey = DuplicationConfiguration.Key("ignoreLiterals")
-  private val ignoreUsingsKey = DuplicationConfiguration.Key("ignoreUsings")
+  private val ignoreAnnotationsKey = Options.Key("ignoreAnnotations")
+  private val skipLexicalErrorsKey = Options.Key("skipLexicalErrors")
+  private val minimumTileSizeKey = Options.Key("minTokenMatch")
+  private val ignoreIdentifiersKey = Options.Key("ignoreIdentifiers")
+  private val ignoreLiteralsKey = Options.Key("ignoreLiterals")
+  private val ignoreUsingsKey = Options.Key("ignoreUsings")
 
-  override def apply(
-    path: Source.Directory,
-    language: Option[Language],
-    options: Map[DuplicationConfiguration.Key, DuplicationConfiguration.Value]): Try[List[DuplicationClone]] = {
+  override def apply(path: Source.Directory,
+                     language: Option[Language],
+                     options: Map[Options.Key, Options.Value]): Try[List[DuplicationClone]] = {
 
     val baos = new ByteArrayOutputStream()
     val stdErr = System.err
@@ -85,16 +86,14 @@ object Cpd extends DuplicationTool {
     }
   }
 
-  private def resolveConfigurations(
-    languages: List[Language],
-    options: Map[DuplicationConfiguration.Key, DuplicationConfiguration.Value]): List[CPDConfiguration] = {
+  private def resolveConfigurations(languages: List[Language],
+                                    options: Map[Options.Key, Options.Value]): List[CPDConfiguration] = {
 
     languages.flatMap(resolveConfiguration(_, options))
   }
 
-  private def resolveConfiguration(
-    language: Language,
-    options: Map[DuplicationConfiguration.Key, DuplicationConfiguration.Value]): Option[CPDConfiguration] = {
+  private def resolveConfiguration(language: Language,
+                                   options: Map[Options.Key, Options.Value]): Option[CPDConfiguration] = {
     language match {
       case Languages.CSharp => Some(cpdConfiguration(new CsLanguage, 50, options))
       case Languages.C | Languages.CPP =>
@@ -123,7 +122,7 @@ object Cpd extends DuplicationTool {
 
   private def cpdConfiguration(cpdLanguage: CPDLanguage,
                                defaultMinToken: Int,
-                               options: Map[DuplicationConfiguration.Key, DuplicationConfiguration.Value]) = {
+                               options: Map[Options.Key, Options.Value]): CPDConfiguration = {
     val cfg = new CPDConfiguration()
     cfg.setLanguage(cpdLanguage)
     cfg.setIgnoreAnnotations(options.getValue(ignoreAnnotationsKey, true))
