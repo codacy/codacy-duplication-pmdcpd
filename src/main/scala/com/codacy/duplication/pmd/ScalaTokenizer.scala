@@ -1,13 +1,13 @@
 package com.codacy.duplication.pmd
 
-import java.io.File
+import _root_.java.io.File
 
 import net.sourceforge.pmd.cpd.{Tokens => CpdTokens, _}
 import net.sourceforge.pmd.lang.ast.TokenMgrError
 
-import scala.meta.Token._
-import scala.meta.{Tree => MetaTree, _}
-import scala.util.{Failure, Success, Try}
+import _root_.scala.meta.Token._
+import _root_.scala.meta.{Tree => MetaTree, _}
+import _root_.scala.util.{Failure, Success, Try}
 
 private[pmd] object ScalaTokenizer extends Tokenizer {
 
