@@ -11,7 +11,7 @@ object Dependencies {
   val scalaMeta = "org.scalameta" %% "scalameta" % "1.4.0"
 
   private val pmdGroupArtifactID = "net.sourceforge.pmd"
-  private val pmdVersion = "6.11.0"
+  private val pmdVersion = "6.15.0"
   private val scalaPmd = pmdGroupArtifactID % "pmd-scala" % pmdVersion
   private val javaPmd = pmdGroupArtifactID % "pmd-java" % pmdVersion
   private val javascriptPmd = pmdGroupArtifactID % "pmd-javascript" % pmdVersion
