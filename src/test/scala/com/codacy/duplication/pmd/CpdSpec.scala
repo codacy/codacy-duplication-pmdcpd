@@ -154,10 +154,11 @@ class CpdSpec extends Specification {
 
     clonesTry must beLike {
       case Success(clones) =>
-        clones must haveLength(2)
-
-        testClone(clones.head)(codePath, 30, 119, 2, List("go/rsa.go", "go/rsa.1.go"))
-        testClone(clones(1))(codePath, 10, 47, 2, List("go/rsa.go", "go/rsa.1.go"))
+        clones must haveLength(1)
+        clones.headOption must beSome.like {
+          case clone =>
+            testClone(clone)(codePath, 10, 115, 2, List("go/rsa.go", "go/rsa.1.go"))
+        }
     }
   }
 
@@ -173,7 +174,7 @@ class CpdSpec extends Specification {
         testClone(clones.head)(
           codePath,
           18,
-          126,
+          125,
           2,
           List("plsql/pljson_parser.impl.sql", "plsql/pljson_parser.impl.1.sql"))
     }
