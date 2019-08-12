@@ -179,16 +179,16 @@ workflows:
       - test:
           requires:
             - compile
-      - lint:
-          requires:
-            - compile
+      # - lint:
+      #     requires:
+      #       - compile
       - publish_locally:
           requires:
             - compile
       - publish_dockerhub:
           requires:
             - test
-            - lint
+            # - lint
             - publish_locally
           filters:
             branches:

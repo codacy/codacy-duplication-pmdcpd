@@ -129,6 +129,15 @@ object Cpd extends DuplicationTool {
   private def cpdConfiguration(cpdLanguage: CPDLanguage,
                                defaultMinToken: Int,
                                options: Map[Options.Key, Options.Value]): CPDConfiguration = {
+
+    println("options:")
+    println(options.getValue(ignoreAnnotationsKey, true))
+    println(options.getValue(skipLexicalErrorsKey, true))
+    println(options.getValue(minimumTileSizeKey, defaultMinToken))
+    println(options.getValue(ignoreIdentifiersKey, true))
+    println(options.getValue(ignoreLiteralsKey, true))
+    println(options.getValue(ignoreUsingsKey, true))
+    
     val cfg = new CPDConfiguration()
     cfg.setLanguage(cpdLanguage)
     cfg.setIgnoreAnnotations(options.getValue(ignoreAnnotationsKey, true))
@@ -141,6 +150,13 @@ object Cpd extends DuplicationTool {
   }
 
   private def duplicationClone(m: Match, rootDirectory: Path): DuplicationClone = {
+
+    val sourceCodeSlice = m.getSourceCodeSlice
+
+    val tokenCount = m.getTokenCount
+    
+    val lineCount = m.getLineCount
+
     // println("da qui")
     println("match " + m)
     val markset = m.getMarkSet.asScala.toList
@@ -155,7 +171,7 @@ object Cpd extends DuplicationTool {
     }(collection.breakOut)
 
     // println("files -> "+files.size)
-    DuplicationClone(m.getSourceCodeSlice, m.getTokenCount, m.getLineCount, files)
+    DuplicationClone(sourceCodeSlice, tokenCount, lineCount, files)
   }
 
 }
