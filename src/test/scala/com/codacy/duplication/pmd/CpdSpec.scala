@@ -38,25 +38,26 @@ class CpdSpec extends Specification {
 
       // cfg.setLanguage(new EcmascriptLanguage)
 
-      // // cfg.setIgnoreAnnotations(true)
-      // // cfg.setSkipLexicalErrors(true)
-      // // cfg.setMinimumTileSize(100)
-      // // cfg.setIgnoreIdentifiers(true)
-      // // cfg.setIgnoreLiterals(true)
-      // // cfg.setIgnoreUsings(true)
+      // // // cfg.setIgnoreAnnotations(true)
+      // // // cfg.setSkipLexicalErrors(true)
+      // // // cfg.setMinimumTileSize(100)
+      // // // cfg.setIgnoreIdentifiers(true)
+      // // // cfg.setIgnoreLiterals(true)
+      // // // cfg.setIgnoreUsings(true)
 
-      // cfg.setIgnoreAnnotations(true)
+      // cfg.setIgnoreAnnotations(false)
       // cfg.setSkipLexicalErrors(true)
       // // cfg.setMinimumTileSize(100)
 
+      // cfg.setMinimumTileSize(1000000)
       // cfg.setMinimumTileSize(40)
 
-      // cfg.setIgnoreIdentifiers(true)
-      // cfg.setIgnoreLiterals(true)
-      // cfg.setIgnoreUsings(true)
+      // cfg.setIgnoreIdentifiers(false)
+      // cfg.setIgnoreLiterals(false)
+      // cfg.setIgnoreUsings(false)
 
       // Cpd.runWithConfiguration(cfg,
-      //   _root_.java.nio.file.Paths.get("/home/andrea/workspace/codacy"))
+      //   _root_.java.nio.file.Paths.get("/home/andrea/workspace/codacy/codacy-website"))
         // _root_.java.nio.file.Paths.get("/home/andrea/workspace/codacy/duplication-fork"))
 
       true must beTrue

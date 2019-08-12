@@ -25,7 +25,7 @@ object Common {
           Cmd("RUN", "adduser -u 2004 -D docker"),
           Cmd(
             "ENV",
-            "JAVA_OPTS='-XshowSettings:vm -XX:+HeapDumpOnOutOfMemoryError -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=2 -Xms64M -Xmx512M'"),
+            "JAVA_OPTS='-XshowSettings:vm -XX:+HeapDumpOnOutOfMemoryError -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=2'"),
           Cmd(
             "RUN",
             """|apk update

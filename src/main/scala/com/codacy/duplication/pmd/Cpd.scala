@@ -48,6 +48,7 @@ object Cpd extends DuplicationTool {
     val directoryPath: Path = (File.currentWorkingDirectory / path.path).path
 
     val cpdResultsTry = resolveLanguages(language).map { languages =>
+      println(languages)
       resolveConfigurations(languages, options).flatMap(runWithConfiguration(_, directoryPath))
     }
 
@@ -72,7 +73,7 @@ object Cpd extends DuplicationTool {
     cpd.go()
     val x = cpd.getMatches.asScala.toList
     // val matches = cpd.getMatches.asScala
-    println(x.size)
+    println("matches size "+ x.size)
     x.map { x =>
       println("X -> " + x)
       duplicationClone(x, directory)
@@ -82,6 +83,7 @@ object Cpd extends DuplicationTool {
   private def resolveLanguages(language: Option[Language]): Try[List[Language]] = {
     language match {
       case Some(lang) =>
+        println("lang "+ lang)
         if (allLanguages.contains(lang)) {
           Success(List(lang))
         } else {
@@ -165,6 +167,8 @@ object Cpd extends DuplicationTool {
 
       println(mark.getBeginLine)
       println(mark.getEndLine)
+
+      println( "free memory: " + Runtime.getRuntime().freeMemory() )
 
       val file = rootDirectory.relativize(Paths.get(mark.getFilename))
       DuplicationCloneFile(file.toString, mark.getBeginLine, mark.getEndLine)
