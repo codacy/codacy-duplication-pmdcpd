@@ -49,10 +49,7 @@ class CpdSpec extends Specification {
       // cfg.setIgnoreLiterals(false)
       // cfg.setIgnoreUsings(false)
 
-
-      // Cpd.runWithConfiguration(
-      //   cfg, _root_.java.nio.file.Paths.get("/home/andrea/workspace/codacy/duplication-fork")
-      // )
+      // Cpd.runWithConfiguration(cfg, _root_.java.nio.file.Paths.get("/home/andrea/workspace/codacy/duplication-fork"))
 
       true must beTrue
     }
