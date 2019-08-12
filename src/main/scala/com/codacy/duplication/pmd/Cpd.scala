@@ -74,7 +74,7 @@ object Cpd extends DuplicationTool {
     // val matches = cpd.getMatches.asScala
     // println(matches.size)
     x.map{ x =>
-      // println("X -> "+x)
+      println("X -> "+x)
       duplicationClone(x, directory)
     }
   }
@@ -142,10 +142,10 @@ object Cpd extends DuplicationTool {
 
   private def duplicationClone(m: Match, rootDirectory: Path): DuplicationClone = {
     // println("da qui")
-    // println("match "+m)
+    println("match "+m)
     val markset = m.getMarkSet.asScala.toList
     val files: List[DuplicationCloneFile] = markset.map { mark =>
-      // println("debug mark -> "+ mark)
+      println("debug mark -> "+ mark)
       val file = rootDirectory.relativize(Paths.get(mark.getFilename))
       DuplicationCloneFile(file.toString, mark.getBeginLine, mark.getEndLine)
     }(collection.breakOut)
