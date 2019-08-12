@@ -30,13 +30,13 @@ class CpdSpec extends Specification {
     // }
 
     "debug" in {
-      // import net.sourceforge.pmd.cpd._
+      import net.sourceforge.pmd.cpd._
 
-      // val cfg = new CPDConfiguration()
+      val cfg = new CPDConfiguration()
 
-      // // cfg.setLanguage(new JavaLanguage)
+      // cfg.setLanguage(new JavaLanguage)
 
-      // cfg.setLanguage(new EcmascriptLanguage)
+      cfg.setLanguage(new EcmascriptLanguage)
 
       // // // cfg.setIgnoreAnnotations(true)
       // // // cfg.setSkipLexicalErrors(true)
@@ -45,20 +45,25 @@ class CpdSpec extends Specification {
       // // // cfg.setIgnoreLiterals(true)
       // // // cfg.setIgnoreUsings(true)
 
-      // cfg.setIgnoreAnnotations(false)
-      // cfg.setSkipLexicalErrors(true)
-      // // cfg.setMinimumTileSize(100)
+      cfg.setIgnoreAnnotations(false)
+      cfg.setSkipLexicalErrors(true)
+      // cfg.setMinimumTileSize(100)
 
       // cfg.setMinimumTileSize(1000000)
       // cfg.setMinimumTileSize(40)
+      cfg.setMinimumTileSize(40)
+      // cfg.setMinimumTileSize(100)
 
-      // cfg.setIgnoreIdentifiers(false)
-      // cfg.setIgnoreLiterals(false)
-      // cfg.setIgnoreUsings(false)
+      cfg.setIgnoreIdentifiers(false)
+      cfg.setIgnoreLiterals(false)
+      cfg.setIgnoreUsings(false)
 
       // Cpd.runWithConfiguration(cfg,
       //   _root_.java.nio.file.Paths.get("/home/andrea/workspace/codacy/codacy-website"))
         // _root_.java.nio.file.Paths.get("/home/andrea/workspace/codacy/duplication-fork"))
+
+      Cpd.runWithConfiguration(cfg,
+        _root_.java.nio.file.Paths.get("/home/andrea/workspace/laradminator"))
 
       true must beTrue
     }

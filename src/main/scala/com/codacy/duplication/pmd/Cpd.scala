@@ -71,13 +71,15 @@ object Cpd extends DuplicationTool {
     val cpd = new CPD(config)
     cpd.addRecursively(directory.toFile)
     cpd.go()
+
+    // val x = cpd.getMatches.asScala.toList.par
     val x = cpd.getMatches.asScala.toList
     // val matches = cpd.getMatches.asScala
     println("matches size "+ x.size)
     x.map { x =>
       println("X -> " + x)
       duplicationClone(x, directory)
-    }
+    }.toList
   }
 
   private def resolveLanguages(language: Option[Language]): Try[List[Language]] = {
@@ -151,9 +153,21 @@ object Cpd extends DuplicationTool {
     cfg
   }
 
+  private def getSourceCodeSlice(m: Match): String = {
+    // this makes everything much better ...
+    //  still we materialize the result at some point and is not lazy all the way around ...
+    
+    System.gc()
+    val res = m.getFirstMark().getSourceCodeSlice
+    System.gc()
+    res
+  }
+
   private def duplicationClone(m: Match, rootDirectory: Path): DuplicationClone = {
 
-    val sourceCodeSlice = m.getSourceCodeSlice
+    // System.gc()
+    // val sourceCodeSlice = m.getSourceCodeSlice
+    val sourceCodeSlice = getSourceCodeSlice(m)
 
     val tokenCount = m.getTokenCount
     
@@ -161,7 +175,14 @@ object Cpd extends DuplicationTool {
 
     // println("da qui")
     println("match " + m)
+
+    // this improves a lot....
+    // System.gc()
+
     val markset = m.getMarkSet.asScala.toList
+
+    println("markset size "+ markset.size)
+
     val files: List[DuplicationCloneFile] = markset.map { mark =>
       println("debug mark -> " + mark)
 

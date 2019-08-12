@@ -21,6 +21,9 @@ lazy val codacyDuplictionPmdCpd = project
         scalacOptions in (Compile, console) --= Seq("-Ywarn-unused:imports", "-Xfatal-warnings"))),
     name := "codacy-duplication-pmdcpd",
     // App Dependencies
+    fork in Test := true,
+    // javaOptions in Test ++= Seq("-Xmx512M"),
+    javaOptions in Test ++= Seq("-Xmx1024M", "-XX:+HeapDumpOnOutOfMemoryError"),
     libraryDependencies ++= Seq(
       Dependencies.Codacy.duplicationSeed withSources (),
       Dependencies.playJson,
@@ -33,5 +36,7 @@ lazy val codacyDuplictionPmdCpd = project
 scalaVersion := scalaVersionNumber
 scalaVersion in ThisBuild := scalaVersionNumber
 scalaBinaryVersion in ThisBuild := scalaBinaryVersionNumber
+
+cancelable in Global := true
 
 scapegoatVersion in ThisBuild := "1.3.5"
