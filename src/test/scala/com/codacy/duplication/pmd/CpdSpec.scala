@@ -34,7 +34,10 @@ class CpdSpec extends Specification {
 
       // val cfg = new CPDConfiguration()
 
-      // cfg.setLanguage(new JavaLanguage)
+      // // cfg.setLanguage(new JavaLanguage)
+
+      // cfg.setLanguage(new EcmascriptLanguage)
+
       // // cfg.setIgnoreAnnotations(true)
       // // cfg.setSkipLexicalErrors(true)
       // // cfg.setMinimumTileSize(100)
@@ -42,14 +45,19 @@ class CpdSpec extends Specification {
       // // cfg.setIgnoreLiterals(true)
       // // cfg.setIgnoreUsings(true)
 
-      // cfg.setIgnoreAnnotations(false)
-      // cfg.setSkipLexicalErrors(false)
-      // cfg.setMinimumTileSize(100)
-      // cfg.setIgnoreIdentifiers(false)
-      // cfg.setIgnoreLiterals(false)
-      // cfg.setIgnoreUsings(false)
+      // cfg.setIgnoreAnnotations(true)
+      // cfg.setSkipLexicalErrors(true)
+      // // cfg.setMinimumTileSize(100)
 
-      // Cpd.runWithConfiguration(cfg, _root_.java.nio.file.Paths.get("/home/andrea/workspace/codacy/duplication-fork"))
+      // cfg.setMinimumTileSize(40)
+
+      // cfg.setIgnoreIdentifiers(true)
+      // cfg.setIgnoreLiterals(true)
+      // cfg.setIgnoreUsings(true)
+
+      // Cpd.runWithConfiguration(cfg,
+      //   _root_.java.nio.file.Paths.get("/home/andrea/workspace/codacy"))
+        // _root_.java.nio.file.Paths.get("/home/andrea/workspace/codacy/duplication-fork"))
 
       true must beTrue
     }

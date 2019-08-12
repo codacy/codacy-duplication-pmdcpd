@@ -72,7 +72,7 @@ object Cpd extends DuplicationTool {
     cpd.go()
     val x = cpd.getMatches.asScala.toList
     // val matches = cpd.getMatches.asScala
-    // println(matches.size)
+    println(x.size)
     x.map { x =>
       println("X -> " + x)
       duplicationClone(x, directory)
@@ -137,7 +137,7 @@ object Cpd extends DuplicationTool {
     println(options.getValue(ignoreIdentifiersKey, true))
     println(options.getValue(ignoreLiteralsKey, true))
     println(options.getValue(ignoreUsingsKey, true))
-    
+
     val cfg = new CPDConfiguration()
     cfg.setLanguage(cpdLanguage)
     cfg.setIgnoreAnnotations(options.getValue(ignoreAnnotationsKey, true))
