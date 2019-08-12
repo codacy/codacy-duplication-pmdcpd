@@ -23,6 +23,7 @@ object Common {
       case cmd @ Cmd("ADD", _) =>
         List(
           Cmd("RUN", "adduser -u 2004 -D docker"),
+          Cmd("ENV", "JAVA_OPTS='-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=1 -Xms64M'"),
           Cmd(
             "RUN",
             """|apk update

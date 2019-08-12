@@ -139,7 +139,7 @@ jobs:
       - *restore_build
       - run:
           name: Publish local docker
-          command: ./scripts/publish.sh 2.0.$CIRCLE_BUILD_NUM
+          command: ./scripts/publish.sh 2.0.${CIRCLE_BUILD_NUM}_testJavaOpts
 
   publish_dockerhub:
     machine: true
@@ -158,10 +158,10 @@ jobs:
           name: Push docker to DockerHub
           command: |
             docker login -u $DOCKER_USER -p $DOCKER_PASS
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              docker push codacy/$CIRCLE_PROJECT_REPONAME:latest
-            fi
-            docker push codacy/$CIRCLE_PROJECT_REPONAME:2.0.$CIRCLE_BUILD_NUM
+            # if [ "${CIRCLE_BRANCH}" == "master" ]; then
+            #   docker push codacy/$CIRCLE_PROJECT_REPONAME:latest
+            # fi
+            docker push codacy/${CIRCLE_PROJECT_REPONAME}:2.0.${CIRCLE_BUILD_NUM}_testJavaOpts
 
 workflows:
   version: 2
@@ -193,3 +193,5 @@ workflows:
             branches:
               only:
                 - master
+                # TODO: remove me
+                - testJavaOpts
