@@ -66,11 +66,17 @@ object Cpd extends DuplicationTool {
     }
   }
 
-  private def runWithConfiguration(config: CPDConfiguration, directory: Path): List[DuplicationClone] = {
+  def runWithConfiguration(config: CPDConfiguration, directory: Path): List[DuplicationClone] = {
     val cpd = new CPD(config)
     cpd.addRecursively(directory.toFile)
     cpd.go()
-    cpd.getMatches.asScala.map(duplicationClone(_, directory)).toList
+    val x = cpd.getMatches.asScala.toList
+    // val matches = cpd.getMatches.asScala
+    // println(matches.size)
+    x.map{ x =>
+      // println("X -> "+x)
+      duplicationClone(x, directory)
+    }
   }
 
   private def resolveLanguages(language: Option[Language]): Try[List[Language]] = {
@@ -135,11 +141,16 @@ object Cpd extends DuplicationTool {
   }
 
   private def duplicationClone(m: Match, rootDirectory: Path): DuplicationClone = {
-    val files: List[DuplicationCloneFile] = m.getMarkSet.asScala.map { mark =>
+    // println("da qui")
+    // println("match "+m)
+    val markset = m.getMarkSet.asScala.toList
+    val files: List[DuplicationCloneFile] = markset.map { mark =>
+      // println("debug mark -> "+ mark)
       val file = rootDirectory.relativize(Paths.get(mark.getFilename))
       DuplicationCloneFile(file.toString, mark.getBeginLine, mark.getEndLine)
     }(collection.breakOut)
 
+    // println("files -> "+files.size)
     DuplicationClone(m.getSourceCodeSlice, m.getTokenCount, m.getLineCount, files)
   }
 

@@ -17,6 +17,7 @@ lazy val codacyDuplictionPmdCpd = project
         resolvers := Seq("Sonatype OSS Snapshots".at("https://oss.sonatype.org/content/repositories/releases")) ++ resolvers.value,
         scalacOptions ++= Common.compilerFlags,
         scalacOptions in Test ++= Seq("-Yrangepos"),
+        scalacOptions -= "-Xfatal-warnings",
         scalacOptions in (Compile, console) --= Seq("-Ywarn-unused:imports", "-Xfatal-warnings"))),
     name := "codacy-duplication-pmdcpd",
     // App Dependencies
