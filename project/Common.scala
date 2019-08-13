@@ -1,6 +1,7 @@
 import com.typesafe.sbt.packager.Keys._
 import com.typesafe.sbt.packager.docker.{Cmd, DockerAlias}
 import com.typesafe.sbt.packager.docker.DockerPlugin.autoImport.Docker
+import com.typesafe.sbt.SbtNativePackager.Universal
 import sbt.Def
 import sbt.Keys._
 
@@ -19,6 +20,8 @@ object Common {
     daemonUser in Docker := "docker",
     dockerEntrypoint := Seq(s"$defaultDockerInstallationPath/bin/${name.value}"),
     dockerCmd := Seq(),
+    // Materializing code in memory with `getSourceCodeSlice` bomb the heap with Strings
+    javaOptions in Universal ++= Seq("-XX:+UseG1GC", "-XX:+UseStringDeduplication"),
     dockerCommands := dockerCommands.value.flatMap {
       case cmd @ Cmd("ADD", _) =>
         List(
