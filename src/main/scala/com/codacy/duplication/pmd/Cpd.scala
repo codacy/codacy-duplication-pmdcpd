@@ -157,17 +157,17 @@ object Cpd extends DuplicationTool {
     // this makes everything much better ...
     //  still we materialize the result at some point and is not lazy all the way around ...
     
-    System.gc()
+    // System.gc()
     val res = m.getFirstMark().getSourceCodeSlice
-    System.gc()
+    // System.gc()
     res
   }
 
   private def duplicationClone(m: Match, rootDirectory: Path): DuplicationClone = {
 
     // System.gc()
-    // val sourceCodeSlice = m.getSourceCodeSlice
-    val sourceCodeSlice = getSourceCodeSlice(m)
+    val sourceCodeSlice = m.getSourceCodeSlice
+    // val sourceCodeSlice = getSourceCodeSlice(m)
 
     val tokenCount = m.getTokenCount
     

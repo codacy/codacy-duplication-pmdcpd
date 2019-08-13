@@ -23,7 +23,8 @@ lazy val codacyDuplictionPmdCpd = project
     // App Dependencies
     fork in Test := true,
     // javaOptions in Test ++= Seq("-Xmx512M"),
-    javaOptions in Test ++= Seq("-Xmx1024M", "-XX:+HeapDumpOnOutOfMemoryError"),
+    javaOptions in Test ++= Seq("-Xmx128M", "-XX:+HeapDumpOnOutOfMemoryError"),
+    javaOptions in Test ++= Seq("-XX:+UseG1GC", "-XX:+UseStringDeduplication"),
     libraryDependencies ++= Seq(
       Dependencies.Codacy.duplicationSeed withSources (),
       Dependencies.playJson,
