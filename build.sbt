@@ -29,6 +29,20 @@ lazy val codacyDuplictionPmdCpd = project
     libraryDependencies ++= Seq(Dependencies.specs2).map(_ % Test))
   .settings(Common.dockerSettings: _*)
 
+mappings.in(Universal) ++= resourceDirectory
+  .in(Compile)
+  .map { resourceDir: File =>
+    val src = resourceDir / "docs"
+    val dest = "/docs"
+
+    val docFiles = for {
+      path <- src.allPaths.get if !path.isDirectory
+    } yield path -> path.toString.replaceFirst(src.toString, dest)
+
+    docFiles
+  }
+  .value
+
 scalaVersion := scalaVersionNumber
 scalaVersion in ThisBuild := scalaVersionNumber
 scalaBinaryVersion in ThisBuild := scalaBinaryVersionNumber
