@@ -1,0 +1,23 @@
+<checkstyle version="4.3">
+    <property name="ignoreMessage" />
+    <duplication nrTokens="98" nrLines="18" message="">
+        <file name="comments/comments-test2.js">
+            <property name="startLine" value="88" />
+            <property name="endLine" value="105" />
+        </file>
+        <file name="comments/comments-test1.js">
+            <property name="startLine" value="88" />
+            <property name="endLine" value="105" />
+        </file>
+    </duplication>
+    <duplication nrTokens="428" nrLines="194" message="">
+        <file name="misc/angularFiles.js">
+            <property name="startLine" value="1" />
+            <property name="endLine" value="194" />
+        </file>
+        <file name="misc/angularFiles1.js">
+            <property name="startLine" value="1" />
+            <property name="endLine" value="194" />
+        </file>
+    </duplication>
+</checkstyle>

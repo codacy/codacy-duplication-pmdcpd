@@ -24,13 +24,18 @@ object Common {
     dockerCommands := dockerCommands.value.flatMap {
       case cmd @ Cmd("ADD", _) =>
         List(
-          Cmd("RUN", "adduser -u 2004 -D docker"),
+          cmd,
+          Cmd("RUN", s"mv $defaultDockerInstallationPath/docs /docs"),
           Cmd(
             "RUN",
             """|apk update
                |&& apk add --no-cache bash
                |&& rm -rf /tmp/* /var/cache/apk/*
-          """.stripMargin.replaceAll(System.lineSeparator(), " ")),
+          """.stripMargin.replaceAll(System.lineSeparator(), " "))
+        )
+      case cmd @ Cmd("WORKDIR", _) =>
+        List(
+          Cmd("RUN", "adduser -u 2004 -D docker"),
           cmd)
 
       case other => List(other)

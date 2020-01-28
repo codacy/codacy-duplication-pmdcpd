@@ -1,0 +1,13 @@
+<checkstyle version="4.3">
+    <property name="ignoreMessage"/>
+    <duplication nrTokens="115" nrLines="28" message="">
+        <file name="KeyboardReader2.java">
+            <property name="startLine" value="18"/>
+            <property name="endLine" value="45"/>
+        </file>
+        <file name="KeyboardReader.java">
+            <property name="startLine" value="18"/>
+            <property name="endLine" value="45"/>
+        </file>
+    </duplication>
+</checkstyle>

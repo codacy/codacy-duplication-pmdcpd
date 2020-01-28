@@ -1,0 +1,13 @@
+<checkstyle version="4.3">
+    <property name="ignoreMessage" />
+    <duplication nrTokens="104" nrLines="20" message="">
+        <file name="RegexLexer.1.swift">
+            <property name="startLine" value="15" />
+            <property name="endLine" value="34" />
+        </file>
+        <file name="RegexLexer.swift">
+            <property name="startLine" value="95" />
+            <property name="endLine" value="114" />
+        </file>
+    </duplication>
+</checkstyle>
