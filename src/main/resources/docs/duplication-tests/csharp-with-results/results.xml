@@ -1,0 +1,23 @@
+<checkstyle version="4.3">
+    <property name="ignoreMessage"></property>
+    <duplication nrTokens="53" nrLines="9" message="">
+        <file name="Test1.cs">
+            <property name="startLine" value="10"></property>
+            <property name="endLine" value="18"></property>
+        </file>
+        <file name="Test1.cs">
+            <property name="startLine" value="52"></property>
+            <property name="endLine" value="60"></property>
+        </file>
+    </duplication>
+    <duplication nrTokens="66" nrLines="24" message="">
+        <file name="Test1.cs">
+            <property name="startLine" value="53"></property>
+            <property name="endLine" value="76"></property>
+        </file>
+        <file name="Test2.cs">
+            <property name="startLine" value="11"></property>
+            <property name="endLine" value="34"></property>
+        </file>
+    </duplication>
+</checkstyle>
