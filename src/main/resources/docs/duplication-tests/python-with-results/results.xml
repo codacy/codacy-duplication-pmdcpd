@@ -1,0 +1,23 @@
+<checkstyle version="4.3">
+    <property name="ignoreMessage" />
+    <duplication nrTokens="159" nrLines="31" message="">
+        <file name="test1.py">
+            <property name="startLine" value="36" />
+            <property name="endLine" value="66" />
+        </file>
+        <file name="test2.py">
+            <property name="startLine" value="37" />
+            <property name="endLine" value="67" />
+        </file>
+    </duplication>
+    <duplication nrTokens="69" nrLines="33" message="">
+        <file name="test1.py">
+            <property name="startLine" value="1" />
+            <property name="endLine" value="33" />
+        </file>
+        <file name="test2.py">
+            <property name="startLine" value="1" />
+            <property name="endLine" value="33" />
+        </file>
+    </duplication>
+</checkstyle>

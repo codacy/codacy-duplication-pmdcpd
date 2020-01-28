@@ -1,0 +1,13 @@
+<checkstyle version="4.3">
+    <property name="ignoreMessage" />
+    <duplication nrTokens="131" nrLines="18" message="">
+        <file name="test1.scala">
+            <property name="startLine" value="18" />
+            <property name="endLine" value="35" />
+        </file>
+        <file name="test2.scala">
+            <property name="startLine" value="17" />
+            <property name="endLine" value="34" />
+        </file>
+    </duplication>
+</checkstyle>
