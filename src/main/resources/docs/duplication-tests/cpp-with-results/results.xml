@@ -1,0 +1,13 @@
+<checkstyle version="4.3">
+    <property name="ignoreMessage" />
+    <duplication nrTokens="145" nrLines="21" message="">
+        <file name="hmac_sha512.cpp">
+            <property name="startLine" value="9" />
+            <property name="endLine" value="29" />
+        </file>
+        <file name="hmac_sha256.cpp">
+            <property name="startLine" value="9" />
+            <property name="endLine" value="29" />
+        </file>
+    </duplication>
+</checkstyle>

@@ -1,0 +1,13 @@
+<checkstyle version="4.3">
+    <property name="ignoreMessage" />
+    <duplication nrTokens="115" nrLines="10" message="">
+        <file name="rsa.1.go">
+            <property name="startLine" value="28" />
+            <property name="endLine" value="37" />
+        </file>
+        <file name="rsa.go">
+            <property name="startLine" value="32" />
+            <property name="endLine" value="41" />
+        </file>
+    </duplication>
+</checkstyle>
