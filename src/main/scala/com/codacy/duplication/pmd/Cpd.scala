@@ -113,8 +113,8 @@ object Cpd extends DuplicationTool {
         val scalaLanguage = new AbstractLanguage(
           cpdScala.getName,
           cpdScala.getTerseName,
-          ScalaTokenizer,
-          cpdScala.getExtensions.asScala: _*) {}
+          com.codacy.duplication.pmd.ScalaTokenizer,
+          cpdScala.getExtensions.asScala.toSeq: _*) {}
         Some(cpdConfiguration(scalaLanguage, 50, options))
       case _ => None
     }
@@ -135,10 +135,10 @@ object Cpd extends DuplicationTool {
   }
 
   private def duplicationClone(m: Match, rootDirectory: Path): DuplicationClone = {
-    val files: List[DuplicationCloneFile] = m.getMarkSet.asScala.map { mark =>
+    val files: List[DuplicationCloneFile] = m.getMarkSet.asScala.view.map { mark =>
       val file = rootDirectory.relativize(Paths.get(mark.getFilename))
       DuplicationCloneFile(file.toString, mark.getBeginLine, mark.getEndLine)
-    }(collection.breakOut)
+    }.to(List)
 
     DuplicationClone(m.getSourceCodeSlice, m.getTokenCount, m.getLineCount, files)
   }

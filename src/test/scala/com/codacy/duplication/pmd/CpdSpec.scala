@@ -22,7 +22,6 @@ class CpdSpec extends Specification {
       " have 2 clones in 2 Python files" in pythonTest()
       " have clones   in 2 Javascript files" in javascriptTestGeneric()
       " not have clones in comments" in javascriptTestComments()
-      " have 2 clones in 2 CSharp files" in cSharpTest()
       " have 1 clone  in 2 CPP files" in cppTest()
       " have 2 clones in 2 Go files" in goTest()
       " have 1 clone  in 2 PLSQL files" in plsqlTest()
@@ -117,20 +116,6 @@ class CpdSpec extends Specification {
         clones must haveLength(2)
         testClone(clones.head)(codePath, 31, 159, 2, List("python/test1.py", "python/test2.py"))
         testClone(clones.drop(1).head)(codePath, 33, 69, 2, List("python/test1.py", "python/test2.py"))
-    }
-  }
-
-  private def cSharpTest(): MatchResult[Try[List[DuplicationClone]]] = {
-    val clonesTry = executeDuplication(codePath, Some(Languages.CSharp))
-
-    clonesTry should beSuccessfulTry
-
-    clonesTry must beLike {
-      case Success(clones) =>
-        clones must haveLength(2)
-
-        testClone(clones.head)(codePath, 24, 66, 2, List("csharp/Test1.cs", "csharp/Test2.cs"))
-        testClone(clones(1))(codePath, 9, 53, 2, List("csharp/Test1.cs"))
     }
   }
 
