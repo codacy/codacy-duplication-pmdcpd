@@ -3,6 +3,8 @@ package com.codacy.docker.api
 import com.codacy.plugins.api.Options
 import play.api.libs.json.{JsBoolean, JsNumber, JsValue}
 
+import scala.language.implicitConversions
+
 package object duplication {
 
   implicit def boolean(value: JsValue): Option[Boolean] =

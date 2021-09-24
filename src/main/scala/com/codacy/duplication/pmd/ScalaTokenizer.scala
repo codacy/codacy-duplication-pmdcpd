@@ -15,13 +15,13 @@ private[pmd] object ScalaTokenizer extends Tokenizer {
 
     val fileName = sourceCode.getFileName
 
-    Try(new File(fileName).parse[Source]) match {
-      case Success(Parsed.Success(tree)) =>
+    Try(new File(fileName).parse[Source].toEither) match {
+      case Success(Right(tree)) =>
         matchesInTree(tree, fileName).foreach(tokenEntries.add)
         tokenEntries.add(TokenEntry.getEOF)
-      case Success(Parsed.Error(position, message, details)) =>
+      case Success(Left(error)) =>
         throw new TokenMgrError(
-          s"Lexical error in file $fileName. The scala tokenizer exited with error on $position: " + message + details,
+          s"Lexical error in file $fileName. The scala tokenizer exited with error on ${error.pos}: " + error.message + error.details,
           TokenMgrError.LEXICAL_ERROR)
       case Failure(error) =>
         throw new TokenMgrError(
@@ -54,7 +54,7 @@ private[pmd] object ScalaTokenizer extends Tokenizer {
           case _: BOF => "BOF"
           case other  => other.show[Syntax]
         }
-        Seq(new TokenEntry(str, filename, token.pos.start.line + 1))
+        Seq(new TokenEntry(str, filename, token.pos.startLine + 1))
     }
   }
 
