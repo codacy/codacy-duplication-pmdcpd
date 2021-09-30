@@ -10,20 +10,22 @@ object Dependencies {
 
   val scalaMeta = "org.scalameta" %% "scalameta" % "4.4.28"
 
-  private val pmdGroupArtifactID = "net.sourceforge.pmd"
-  private val pmdVersion = "6.38.0"
-  private val scalaPmd = pmdGroupArtifactID %% "pmd-scala" % pmdVersion
-  private val javaPmd = pmdGroupArtifactID % "pmd-java" % pmdVersion
-  private val javascriptPmd = pmdGroupArtifactID % "pmd-javascript" % pmdVersion
-  private val rubyPmd = pmdGroupArtifactID % "pmd-ruby" % pmdVersion
-  private val pythonPmd = pmdGroupArtifactID % "pmd-python" % pmdVersion
-  private val csPmd = pmdGroupArtifactID % "pmd-cs" % pmdVersion
-  private val cppPmd = pmdGroupArtifactID % "pmd-cpp" % pmdVersion
-  private val goPmd = pmdGroupArtifactID % "pmd-go" % pmdVersion
-  private val plsqlPmd = pmdGroupArtifactID % "pmd-plsql" % pmdVersion
-  private val swiftPmd = pmdGroupArtifactID % "pmd-swift" % pmdVersion
-  val pmdLanguages = Seq(csPmd, cppPmd, javascriptPmd, goPmd, javaPmd, plsqlPmd, pythonPmd, rubyPmd, scalaPmd, swiftPmd)
+  private val pmdVersion = "6.39.0"
 
+  val pmdLanguages = Seq(
+    "scala",
+    "java",
+    "javascript",
+    "ruby",
+    "python",
+    "cs",
+    "cpp",
+    "go",
+    "plsql",
+    "swift").map {
+    case "scala" => "net.sourceforge.pmd" %% "pmd-scala" % pmdVersion
+    case language => "net.sourceforge.pmd" % s"pmd-$language" % pmdVersion
+  }
   val specs2Version = "4.12.12"
   val specs2 = "org.specs2" %% "specs2-core" % specs2Version
 
