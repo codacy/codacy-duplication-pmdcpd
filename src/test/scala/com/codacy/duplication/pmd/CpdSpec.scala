@@ -148,20 +148,15 @@ class CpdSpec extends Specification {
   }
 
   private def plsqlTest(): MatchResult[Try[List[DuplicationClone]]] = {
-    val clonesTry = executeDuplication(codePath, Some(Languages.SQL))
+    val clonesTry = executeDuplication(codePath, Some(Languages.PLSQL))
 
     clonesTry should beSuccessfulTry
 
     clonesTry must beLike {
       case Success(clones) =>
-        clones must haveLength(1)
+        clones must haveLength(5)
 
-        testClone(clones.head)(
-          codePath,
-          18,
-          125,
-          2,
-          List("plsql/pljson_parser.impl.sql", "plsql/pljson_parser.impl.1.sql"))
+        testClone(clones.head)(codePath, 17, 148, 2, List("plsql/pljson_parser.impl.sql"))
     }
   }
 

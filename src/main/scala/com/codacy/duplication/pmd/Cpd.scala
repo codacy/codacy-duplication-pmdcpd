@@ -3,8 +3,9 @@ package com.codacy.duplication.pmd
 import _root_.java.io.{ByteArrayOutputStream, PrintStream}
 import _root_.java.nio.charset.StandardCharsets
 import _root_.java.nio.file.{Path, Paths}
+import _root_.java.util.Properties
 
-import better.files.File
+import better.files._
 import com.codacy.docker.api.duplication._
 import com.codacy.plugins.api.duplication.{DuplicationClone, DuplicationCloneFile, DuplicationTool}
 import com.codacy.plugins.api.languages.{Language, Languages}
@@ -24,7 +25,7 @@ object Cpd extends DuplicationTool {
       Languages.Javascript,
       Languages.Go,
       Languages.Java,
-      Languages.SQL,
+      Languages.PLSQL,
       Languages.Python,
       Languages.Ruby,
       Languages.Scala,
@@ -48,7 +49,15 @@ object Cpd extends DuplicationTool {
     val directoryPath: Path = (File.currentWorkingDirectory / path.path).path
 
     val cpdResultsTry = resolveLanguages(language).map { languages =>
-      resolveConfigurations(languages, options).flatMap(runWithConfiguration(_, directoryPath))
+      languages.flatMap { language =>
+        val files = File(directoryPath)
+          .walk()
+          .filter(file => file.isRegularFile && language.extensions.contains(file.extension.getOrElse(file.name)))
+          .toSeq
+
+        val configuration = resolveConfiguration(language, options)
+        runWithConfiguration(configuration, directoryPath, files)
+      }
     }
 
     System.setErr(stdErr)
@@ -66,9 +75,11 @@ object Cpd extends DuplicationTool {
     }
   }
 
-  private def runWithConfiguration(config: CPDConfiguration, directory: Path): List[DuplicationClone] = {
+  private def runWithConfiguration(config: CPDConfiguration,
+                                   directory: Path,
+                                   files: Seq[File]): List[DuplicationClone] = {
     val cpd = new CPD(config)
-    cpd.addRecursively(directory.toFile)
+    cpd.add(files.map(_.toJava).asJava)
     cpd.go()
     cpd.getMatches.asScala.map(duplicationClone(_, directory)).toList
   }
@@ -86,28 +97,17 @@ object Cpd extends DuplicationTool {
     }
   }
 
-  private def resolveConfigurations(languages: List[Language],
-                                    options: Map[Options.Key, Options.Value]): List[CPDConfiguration] = {
-
-    languages.flatMap(resolveConfiguration(_, options))
-  }
-
-  private def resolveConfiguration(language: Language,
-                                   options: Map[Options.Key, Options.Value]): Option[CPDConfiguration] = {
+  private def resolveConfiguration(language: Language, options: Map[Options.Key, Options.Value]): CPDConfiguration = {
     language match {
-      case Languages.CSharp => Some(cpdConfiguration(new CsLanguage, 50, options))
-      case Languages.C | Languages.CPP =>
-        val language = new CPPLanguage()
-        // TODO: This workaround can be removed after 6.7.0
-        language.setProperties(System.getProperties)
-        Some(cpdConfiguration(language, 50, options))
-      case Languages.Javascript => Some(cpdConfiguration(new EcmascriptLanguage, 40, options))
-      case Languages.Go         => Some(cpdConfiguration(new GoLanguage, 40, options))
-      case Languages.Java       => Some(cpdConfiguration(new JavaLanguage, 100, options))
-      case Languages.SQL        => Some(cpdConfiguration(new PLSQLLanguage, 100, options))
-      case Languages.Python     => Some(cpdConfiguration(new PythonLanguage, 50, options))
-      case Languages.Ruby       => Some(cpdConfiguration(new RubyLanguage, 50, options))
-      case Languages.Swift      => Some(cpdConfiguration(new SwiftLanguage, 50, options))
+      case Languages.CSharp            => cpdConfiguration(new CsLanguage, 50, options)
+      case Languages.C | Languages.CPP => cpdConfiguration(new CPPLanguage(), 50, options)
+      case Languages.Javascript        => cpdConfiguration(new EcmascriptLanguage, 40, options)
+      case Languages.Go                => cpdConfiguration(new GoLanguage, 40, options)
+      case Languages.Java              => cpdConfiguration(new JavaLanguage, 100, options)
+      case Languages.PLSQL             => cpdConfiguration(new PLSQLLanguage, 100, options)
+      case Languages.Python            => cpdConfiguration(new PythonLanguage, 50, options)
+      case Languages.Ruby              => cpdConfiguration(new RubyLanguage, 50, options)
+      case Languages.Swift             => cpdConfiguration(new SwiftLanguage, 50, options)
       case Languages.Scala =>
         val cpdScala = new ScalaLanguage
         val scalaLanguage = new AbstractLanguage(
@@ -115,22 +115,35 @@ object Cpd extends DuplicationTool {
           cpdScala.getTerseName,
           com.codacy.duplication.pmd.ScalaTokenizer,
           cpdScala.getExtensions.asScala.toSeq: _*) {}
-        Some(cpdConfiguration(scalaLanguage, 50, options))
-      case _ => None
+        cpdConfiguration(scalaLanguage, 50, options)
+      case other =>
+        throw new Exception(s"$other Language not supported")
     }
   }
 
   private def cpdConfiguration(cpdLanguage: CPDLanguage,
                                defaultMinToken: Int,
                                options: Map[Options.Key, Options.Value]): CPDConfiguration = {
+    val ignoreLiterals = options.getValue(ignoreLiteralsKey, true)
+    val ignoreAnnotations = options.getValue(ignoreAnnotationsKey, true)
+    val ignoreUsings = options.getValue(ignoreUsingsKey, true)
+    val ignoreIdentifiers = options.getValue(ignoreIdentifiersKey, true)
+
+    cpdLanguage.setProperties(
+      languageProperties(
+        ignoreLiterals = ignoreLiterals,
+        ignoreIdentifiers = ignoreIdentifiers,
+        ignoreAnnotations = ignoreAnnotations,
+        ignoreUsings = ignoreUsings))
+
     val cfg = new CPDConfiguration()
     cfg.setLanguage(cpdLanguage)
-    cfg.setIgnoreAnnotations(options.getValue(ignoreAnnotationsKey, true))
+    cfg.setIgnoreAnnotations(ignoreAnnotations)
     cfg.setSkipLexicalErrors(options.getValue(skipLexicalErrorsKey, true))
     cfg.setMinimumTileSize(options.getValue(minimumTileSizeKey, defaultMinToken))
-    cfg.setIgnoreIdentifiers(options.getValue(ignoreIdentifiersKey, true))
-    cfg.setIgnoreLiterals(options.getValue(ignoreLiteralsKey, true))
-    cfg.setIgnoreUsings(options.getValue(ignoreUsingsKey, true))
+    cfg.setIgnoreIdentifiers(ignoreIdentifiers)
+    cfg.setIgnoreLiterals(ignoreLiterals)
+    cfg.setIgnoreUsings(ignoreUsings)
     cfg
   }
 
@@ -141,6 +154,26 @@ object Cpd extends DuplicationTool {
     }.to(List)
 
     DuplicationClone(m.getSourceCodeSlice, m.getTokenCount, m.getLineCount, files)
+  }
+
+  private def languageProperties(ignoreLiterals: Boolean,
+                                 ignoreIdentifiers: Boolean,
+                                 ignoreAnnotations: Boolean,
+                                 ignoreUsings: Boolean): Properties = {
+    val p = System.getProperties()
+    if (ignoreLiterals) {
+      p.setProperty(Tokenizer.IGNORE_LITERALS, "true")
+    }
+    if (ignoreIdentifiers) {
+      p.setProperty(Tokenizer.IGNORE_IDENTIFIERS, "true")
+    }
+    if (ignoreAnnotations) {
+      p.setProperty(Tokenizer.IGNORE_ANNOTATIONS, "true")
+    }
+    if (ignoreUsings) {
+      p.setProperty(Tokenizer.IGNORE_USINGS, "true")
+    }
+    p
   }
 
 }
