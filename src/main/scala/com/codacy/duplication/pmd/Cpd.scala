@@ -25,7 +25,7 @@ object Cpd extends DuplicationTool {
       Languages.Javascript,
       Languages.Go,
       Languages.Java,
-      Languages.SQL,
+      Languages.PLSQL,
       Languages.Python,
       Languages.Ruby,
       Languages.Scala,
@@ -104,7 +104,7 @@ object Cpd extends DuplicationTool {
       case Languages.Javascript        => cpdConfiguration(new EcmascriptLanguage, 40, options)
       case Languages.Go                => cpdConfiguration(new GoLanguage, 40, options)
       case Languages.Java              => cpdConfiguration(new JavaLanguage, 100, options)
-      case Languages.SQL               => cpdConfiguration(new PLSQLLanguage, 100, options)
+      case Languages.PLSQL             => cpdConfiguration(new PLSQLLanguage, 100, options)
       case Languages.Python            => cpdConfiguration(new PythonLanguage, 50, options)
       case Languages.Ruby              => cpdConfiguration(new RubyLanguage, 50, options)
       case Languages.Swift             => cpdConfiguration(new SwiftLanguage, 50, options)
