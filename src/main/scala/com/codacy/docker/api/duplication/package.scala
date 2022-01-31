@@ -15,9 +15,9 @@ package object duplication {
 
   implicit class DuplicationConfigurationExtended(options: Map[Options.Key, Options.Value]) {
 
-    def getValue[A](key: Options.Key, defaultValue: A)(implicit ev: JsValue => Option[A]): A = {
-      options.get(key).fold(defaultValue) { value: Options.Value =>
-        Option(value: JsValue).flatMap(ev).getOrElse(defaultValue)
+    def getValue[A](key: String)(implicit ev: JsValue => Option[A]): Option[A] = {
+      options.get(Options.Key(key)).flatMap { value: Options.Value =>
+        Option(value: JsValue).flatMap(ev)
       }
     }
   }
