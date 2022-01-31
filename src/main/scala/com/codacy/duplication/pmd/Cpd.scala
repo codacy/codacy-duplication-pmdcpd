@@ -3,7 +3,6 @@ package com.codacy.duplication.pmd
 import _root_.java.io.{ByteArrayOutputStream, PrintStream}
 import _root_.java.nio.charset.StandardCharsets
 import _root_.java.nio.file.{Path, Paths}
-import _root_.java.util.Properties
 
 import better.files._
 import com.codacy.docker.api.duplication._
@@ -30,13 +29,6 @@ object Cpd extends DuplicationTool {
       Languages.Ruby,
       Languages.Scala,
       Languages.Swift)
-
-  private val ignoreAnnotationsKey = Options.Key("ignoreAnnotations")
-  private val skipLexicalErrorsKey = Options.Key("skipLexicalErrors")
-  private val minimumTileSizeKey = Options.Key("minTokenMatch")
-  private val ignoreIdentifiersKey = Options.Key("ignoreIdentifiers")
-  private val ignoreLiteralsKey = Options.Key("ignoreLiterals")
-  private val ignoreUsingsKey = Options.Key("ignoreUsings")
 
   override def apply(path: Source.Directory,
                      language: Option[Language],
@@ -124,26 +116,25 @@ object Cpd extends DuplicationTool {
   private def cpdConfiguration(cpdLanguage: CPDLanguage,
                                defaultMinToken: Int,
                                options: Map[Options.Key, Options.Value]): CPDConfiguration = {
-    val ignoreLiterals = options.getValue(ignoreLiteralsKey, true)
-    val ignoreAnnotations = options.getValue(ignoreAnnotationsKey, true)
-    val ignoreUsings = options.getValue(ignoreUsingsKey, true)
-    val ignoreIdentifiers = options.getValue(ignoreIdentifiersKey, true)
-
-    cpdLanguage.setProperties(
-      languageProperties(
-        ignoreLiterals = ignoreLiterals,
-        ignoreIdentifiers = ignoreIdentifiers,
-        ignoreAnnotations = ignoreAnnotations,
-        ignoreUsings = ignoreUsings))
+    // We want to use PMDCPD defaults. However, this is a breaking change and needs to be considered.
+    // Remove the `.orElse(Some(true))` to use the PMDCPD defaults.
+    val ignoreLiterals = options.getValue[Boolean]("ignoreLiterals").orElse(Some(true))
+    val ignoreAnnotations = options.getValue[Boolean]("ignoreAnnotations").orElse(Some(true))
+    val ignoreUsings = options.getValue[Boolean]("ignoreUsings").orElse(Some(true))
+    val ignoreIdentifiers = options.getValue[Boolean]("ignoreIdentifiers").orElse(Some(true))
+    val skipLexicalErrors = options.getValue[Boolean]("skipLexicalErrors").orElse(Some(true))
+    // This is mandatory in PMDCPD
+    val minimumTileSize = options.getValue[Int]("minTokenMatch").getOrElse(defaultMinToken)
 
     val cfg = new CPDConfiguration()
     cfg.setLanguage(cpdLanguage)
-    cfg.setIgnoreAnnotations(ignoreAnnotations)
-    cfg.setSkipLexicalErrors(options.getValue(skipLexicalErrorsKey, true))
-    cfg.setMinimumTileSize(options.getValue(minimumTileSizeKey, defaultMinToken))
-    cfg.setIgnoreIdentifiers(ignoreIdentifiers)
-    cfg.setIgnoreLiterals(ignoreLiterals)
-    cfg.setIgnoreUsings(ignoreUsings)
+    ignoreAnnotations.foreach(cfg.setIgnoreAnnotations)
+    skipLexicalErrors.foreach(cfg.setSkipLexicalErrors)
+    ignoreIdentifiers.foreach(cfg.setIgnoreIdentifiers)
+    ignoreLiterals.foreach(cfg.setIgnoreLiterals)
+    ignoreUsings.foreach(cfg.setIgnoreUsings)
+    cfg.setMinimumTileSize(minimumTileSize)
+    CPDConfiguration.setSystemProperties(cfg)
     cfg
   }
 
@@ -154,26 +145,6 @@ object Cpd extends DuplicationTool {
     }.to(List)
 
     DuplicationClone(m.getSourceCodeSlice, m.getTokenCount, m.getLineCount, files)
-  }
-
-  private def languageProperties(ignoreLiterals: Boolean,
-                                 ignoreIdentifiers: Boolean,
-                                 ignoreAnnotations: Boolean,
-                                 ignoreUsings: Boolean): Properties = {
-    val p = System.getProperties()
-    if (ignoreLiterals) {
-      p.setProperty(Tokenizer.IGNORE_LITERALS, "true")
-    }
-    if (ignoreIdentifiers) {
-      p.setProperty(Tokenizer.IGNORE_IDENTIFIERS, "true")
-    }
-    if (ignoreAnnotations) {
-      p.setProperty(Tokenizer.IGNORE_ANNOTATIONS, "true")
-    }
-    if (ignoreUsings) {
-      p.setProperty(Tokenizer.IGNORE_USINGS, "true")
-    }
-    p
   }
 
 }
