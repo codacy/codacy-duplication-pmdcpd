@@ -156,7 +156,7 @@ class CpdSpec extends Specification {
       case Success(clones) =>
         clones must haveLength(2)
 
-        testClone(clones.head)(codePath, 17, 148, 2, List("plsql/pljson_parser.impl.sql"))
+        testClone(clones.head)(codePath, 17, 149, 2, List("plsql/pljson_parser.impl.sql"))
     }
   }
 
