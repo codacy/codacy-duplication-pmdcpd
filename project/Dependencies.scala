@@ -10,7 +10,7 @@ object Dependencies {
 
   val scalaMeta = "org.scalameta" %% "scalameta" % "4.4.28"
 
-  private val pmdVersion = "6.39.0"
+  private val pmdVersion = "6.44.0"
 
   val pmdLanguages = Seq(
     "scala",
