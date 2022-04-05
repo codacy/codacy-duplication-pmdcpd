@@ -154,7 +154,7 @@ class CpdSpec extends Specification {
 
     clonesTry must beLike {
       case Success(clones) =>
-        clones must haveLength(5)
+        clones must haveLength(2)
 
         testClone(clones.head)(codePath, 17, 148, 2, List("plsql/pljson_parser.impl.sql"))
     }

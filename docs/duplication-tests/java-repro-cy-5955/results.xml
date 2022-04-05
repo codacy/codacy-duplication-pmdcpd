@@ -1,0 +1,3 @@
+<checkstyle version="4.3" />
+<!-- This test is here to validate the default configuration of CPD, where in this case ignoreIdentifiers should be false
+ because it was giving false positives -->
