@@ -121,7 +121,7 @@ object Cpd extends DuplicationTool {
     val ignoreLiterals = options.getValue[Boolean]("ignoreLiterals").orElse(Some(true))
     val ignoreAnnotations = options.getValue[Boolean]("ignoreAnnotations").orElse(Some(true))
     val ignoreUsings = options.getValue[Boolean]("ignoreUsings").orElse(Some(true))
-    val ignoreIdentifiers = options.getValue[Boolean]("ignoreIdentifiers").orElse(Some(true))
+    val ignoreIdentifiers = options.getValue[Boolean]("ignoreIdentifiers").orElse(Some(false))
     val skipLexicalErrors = options.getValue[Boolean]("skipLexicalErrors").orElse(Some(true))
     // This is mandatory in PMDCPD
     val minimumTileSize = options.getValue[Int]("minTokenMatch").getOrElse(defaultMinToken)
