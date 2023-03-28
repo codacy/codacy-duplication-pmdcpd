@@ -6,7 +6,7 @@ lazy val codacyDuplictionPmdCpd = project
   .settings(
     name := "codacy-duplication-pmdcpd",
     // Materializing code in memory with `getSourceCodeSlice` bomb the heap with Strings
-    Universal / javaOptions ++= Seq("-XX:+UseG1GC", "-XX:+UseStringDeduplication"),
+    Universal / javaOptions ++= Seq("-XX:+UseG1GC", "-XX:+UseStringDeduplication", "-XX:MaxRAMPercentage=90.0"),
     // App Dependencies
     libraryDependencies ++= Seq(Dependencies.Codacy.duplicationSeed, Dependencies.playJson, Dependencies.scalaMeta) ++
       Dependencies.pmdLanguages,
