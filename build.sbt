@@ -1,4 +1,4 @@
-ThisBuild / scalaVersion := "2.13.8"
+ThisBuild / scalaVersion := "2.13.12"
 
 lazy val codacyDuplictionPmdCpd = project
   .in(file("."))
