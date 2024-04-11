@@ -16,6 +16,11 @@ import _root_.scala.util.{Failure, Success, Try}
 
 object Cpd extends DuplicationTool {
 
+  // This should ideally come from configuration so changing the config is automatically propagated here.
+  // For now we are hardcoding it here which is defined here:
+  // https://github.com/codacy/codacy-worker/blob/6f2bee63b1c42a19f05b7b73497da001740d9e14/conf/application.conf#L107
+  private val MaxFileSize = 150000
+
   private val allLanguages: List[Language] =
     List[Language](
       Languages.CSharp,
@@ -44,7 +49,11 @@ object Cpd extends DuplicationTool {
       languages.flatMap { language =>
         val files = File(directoryPath)
           .walk()
-          .filter(file => file.isRegularFile && language.extensions.contains(file.extension.getOrElse(file.name)))
+          .filter(
+            file =>
+              file.isRegularFile &&
+                language.extensions.contains(file.extension.getOrElse(file.name)) &&
+                file.size < MaxFileSize)
           .toSeq
 
         val configuration = resolveConfiguration(language, options)
