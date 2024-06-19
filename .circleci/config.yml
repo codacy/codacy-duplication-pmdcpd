@@ -25,7 +25,6 @@ workflows:
           name: publish_docker_local
           cmd: |
             sbt "test:scalafmt::test;
-                 sbt:scalafmt::test;
                  Test / compile;
                  stage"
             docker build -t $CIRCLE_PROJECT_REPONAME:latest .
