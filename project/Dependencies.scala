@@ -3,14 +3,14 @@ import sbt._
 object Dependencies {
 
   object Codacy {
-    val duplicationSeed = "com.codacy" %% "codacy-duplication-scala-seed" % "2.0.1"
+    val duplicationSeed = "com.codacy" %% "codacy-duplication-scala-seed" % "2.1.1"
   }
 
-  val playJson = "com.typesafe.play" %% "play-json" % "2.7.4"
+  val playJson = "com.typesafe.play" %% "play-json" % "2.10.6"
 
-  val scalaMeta = "org.scalameta" %% "scalameta" % "4.4.28"
+  val scalaMeta = "org.scalameta" %% "scalameta" % "4.9.6"
 
-  private val pmdVersion = "6.44.0"
+  private val pmdVersion = "6.55.0"
 
   val pmdLanguages = Seq(
     "scala",
