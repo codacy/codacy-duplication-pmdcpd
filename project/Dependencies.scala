@@ -10,19 +10,23 @@ object Dependencies {
 
   val scalaMeta = "org.scalameta" %% "scalameta" % "4.4.28"
 
-  private val pmdVersion = "6.44.0"
+  private val pmdVersion = "6.55.0"
 
   val pmdLanguages = Seq(
     "scala",
     "java",
     "javascript",
+    "jsp",
     "ruby",
     "python",
     "cs",
     "cpp",
     "go",
     "plsql",
-    "swift").map {
+    "swift",
+    "xml",
+    "tsql",
+    "visualforce").map {
     case "scala" => "net.sourceforge.pmd" %% "pmd-scala" % pmdVersion
     case language => "net.sourceforge.pmd" % s"pmd-$language" % pmdVersion
   }
