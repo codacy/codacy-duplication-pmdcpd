@@ -33,9 +33,7 @@ object Cpd extends DuplicationTool {
       Languages.Swift,
       Languages.Python,
       Languages.Scala,
-      Languages.XML,
       Languages.PLSQL,
-      Languages.TSQL,
       Languages.VisualForce)
 
   override def apply(path: Source.Directory,
@@ -106,15 +104,13 @@ object Cpd extends DuplicationTool {
       case Languages.CSharp            => cpdConfiguration(new CsLanguage, 50, options)
       case Languages.C | Languages.CPP => cpdConfiguration(new CPPLanguage(), 50, options)
       case Languages.Javascript        => cpdConfiguration(new EcmascriptLanguage, 40, options)
-      case Languages.JSP               => cpdConfiguration(new JspLanguage, 40, options)
+      case Languages.JSP               => cpdConfiguration(new JSPLanguage, 40, options)
       case Languages.Go                => cpdConfiguration(new GoLanguage, 40, options)
       case Languages.Java              => cpdConfiguration(new JavaLanguage, 100, options)
       case Languages.PLSQL             => cpdConfiguration(new PLSQLLanguage, 100, options)
-      case Languages.TSQL              => cpdConfiguration(new TSQLLanguage, 100, options)
       case Languages.Python            => cpdConfiguration(new PythonLanguage, 50, options)
       case Languages.Ruby              => cpdConfiguration(new RubyLanguage, 50, options)
       case Languages.Swift             => cpdConfiguration(new SwiftLanguage, 50, options)
-      case Languages.XML               => cpdConfiguration(new XmlLanguage, 50, options)
       case Languages.VisualForce       => cpdConfiguration(new VfLanguage, 50, options)
       case Languages.Apex              => cpdConfiguration(new ApexLanguage, 50, options)
       case Languages.Scala =>

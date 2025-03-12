@@ -24,8 +24,6 @@ object Dependencies {
     "go",
     "plsql",
     "swift",
-    "xml",
-    "tsql",
     "visualforce").map {
     case "scala" => "net.sourceforge.pmd" %% "pmd-scala" % pmdVersion
     case language => "net.sourceforge.pmd" % s"pmd-$language" % pmdVersion
