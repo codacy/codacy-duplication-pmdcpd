@@ -23,17 +23,19 @@ object Cpd extends DuplicationTool {
 
   private val allLanguages: List[Language] =
     List[Language](
+      Languages.Apex,
       Languages.CSharp,
       Languages.C,
       Languages.CPP,
       Languages.Javascript,
-      Languages.Go,
+      Languages.JSP,
       Languages.Java,
-      Languages.PLSQL,
+      Languages.Go,
+      Languages.Swift,
       Languages.Python,
-      Languages.Ruby,
       Languages.Scala,
-      Languages.Swift)
+      Languages.PLSQL,
+      Languages.VisualForce)
 
   override def apply(path: Source.Directory,
                      language: Option[Language],
@@ -103,12 +105,15 @@ object Cpd extends DuplicationTool {
       case Languages.CSharp            => cpdConfiguration(new CsLanguage, 50, options)
       case Languages.C | Languages.CPP => cpdConfiguration(new CPPLanguage(), 50, options)
       case Languages.Javascript        => cpdConfiguration(new EcmascriptLanguage, 40, options)
+      case Languages.JSP               => cpdConfiguration(new JSPLanguage, 40, options)
       case Languages.Go                => cpdConfiguration(new GoLanguage, 40, options)
       case Languages.Java              => cpdConfiguration(new JavaLanguage, 100, options)
       case Languages.PLSQL             => cpdConfiguration(new PLSQLLanguage, 100, options)
       case Languages.Python            => cpdConfiguration(new PythonLanguage, 50, options)
       case Languages.Ruby              => cpdConfiguration(new RubyLanguage, 50, options)
       case Languages.Swift             => cpdConfiguration(new SwiftLanguage, 50, options)
+      case Languages.VisualForce       => cpdConfiguration(new VfLanguage, 50, options)
+      case Languages.Apex              => cpdConfiguration(new ApexLanguage, 50, options)
       case Languages.Scala =>
         val cpdScala = new ScalaLanguage
         val scalaLanguage = new AbstractLanguage(
