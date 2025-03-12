@@ -29,6 +29,7 @@ object Cpd extends DuplicationTool {
       Languages.CPP,
       Languages.Javascript,
       Languages.JSP,
+      Languages.Java,
       Languages.Go,
       Languages.Swift,
       Languages.Python,
