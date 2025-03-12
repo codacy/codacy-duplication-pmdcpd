@@ -104,15 +104,19 @@ object Cpd extends DuplicationTool {
 
   private def resolveConfiguration(language: Language, options: Map[Options.Key, Options.Value]): CPDConfiguration = {
     language match {
-      case Languages.CSharp            => cpdConfiguration(new CsLanguage, 50, options)
-      case Languages.C | Languages.CPP => cpdConfiguration(new CPPLanguage(), 50, options)
-      case Languages.Javascript        => cpdConfiguration(new EcmascriptLanguage, 40, options)
-      case Languages.Go                => cpdConfiguration(new GoLanguage, 40, options)
-      case Languages.Java              => cpdConfiguration(new JavaLanguage, 100, options)
-      case Languages.PLSQL             => cpdConfiguration(new PLSQLLanguage, 100, options)
-      case Languages.Python            => cpdConfiguration(new PythonLanguage, 50, options)
-      case Languages.Ruby              => cpdConfiguration(new RubyLanguage, 50, options)
-      case Languages.Swift             => cpdConfiguration(new SwiftLanguage, 50, options)
+      case Languages.CSharp                     => cpdConfiguration(new CsLanguage, 50, options)
+      case Languages.C | Languages.CPP          => cpdConfiguration(new CPPLanguage(), 50, options)
+      case Languages.Javascript | Languages.JSP => cpdConfiguration(new EcmascriptLanguage, 40, options)
+      case Languages.Go                         => cpdConfiguration(new GoLanguage, 40, options)
+      case Languages.Java                       => cpdConfiguration(new JavaLanguage, 100, options)
+      case Languages.PLSQL | Languages.TSQL     => cpdConfiguration(new PLSQLLanguage, 100, options)
+      case Languages.Python                     => cpdConfiguration(new PythonLanguage, 50, options)
+      case Languages.Ruby                       => cpdConfiguration(new RubyLanguage, 50, options)
+      case Languages.Swift                      => cpdConfiguration(new SwiftLanguage, 50, options)
+      case Languages.XML                        => cpdConfiguration(new XMLLanguage, 50, options)
+      case Languages.Velocity                   => cpdConfiguration(new VelocityLanguage, 50, options)
+      case Languages.VisualForce                => cpdConfiguration(new VisualForceLanguage, 50, options)
+      case Languages.Apex                       => cpdConfiguration(new ApexLanguage, 50, options)
       case Languages.Scala =>
         val cpdScala = new ScalaLanguage
         val scalaLanguage = new AbstractLanguage(
