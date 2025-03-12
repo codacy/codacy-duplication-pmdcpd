@@ -13,6 +13,7 @@ object Dependencies {
   private val pmdVersion = "6.55.0"
 
   val pmdLanguages = Seq(
+    "apex",
     "scala",
     "java",
     "javascript",
