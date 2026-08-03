@@ -1,8 +1,8 @@
 version: 2.1
 
 orbs:
-  codacy: codacy/base@11.2.0
-  codacy_plugins_test: codacy/plugins-test@1.1.1
+  codacy: codacy/base@12.1.1
+  codacy_plugins_test: codacy/plugins-test@2.0.11
 
 jobs:
   test:
@@ -24,9 +24,7 @@ workflows:
       - codacy/sbt:
           name: publish_docker_local
           cmd: |
-            sbt "scalafmt::test;
-                 test:scalafmt::test;
-                 sbt:scalafmt::test;
+            sbt "test:scalafmt::test;
                  Test / compile;
                  stage"
             docker build -t $CIRCLE_PROJECT_REPONAME:latest .
